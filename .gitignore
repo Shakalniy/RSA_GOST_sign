@@ -31,6 +31,7 @@ share/python-wheels/
 # PEP 582; used by e.g. github.com/David-OConnor/pyflow
 __pypackages__/
 
-4293788459.pdf
-sign_text/
+*.pdf
+signed_files/
 GOST/stribog_neyron.py
+*.txt
