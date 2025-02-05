@@ -4,6 +4,9 @@ import time
 import hashlib
 
 
+main_folder = 'signed_files'
+
+
 def get_open_key(file_name):
     return [int(x) for x in get_file_text(file_name).split("\n")]
 
@@ -15,7 +18,7 @@ def get_file_text(file_name):
 
 def check_sign():
     file_name = uni.input_file_name("Введите имя подписываемого файла: ")
-    folder_path = "sign_" + file_name.split('.')[0]
+    folder_path = main_folder + "/" + "sign_" + file_name.split('.')[0]
     sign_file_name = folder_path + "/" + uni.input_file_name("Введите имя файла с подписью: ", folder_path + "/")
     open_key_name = folder_path + "/open_key_" + file_name.split('.')[0] + ".txt"
     t = time.time()
