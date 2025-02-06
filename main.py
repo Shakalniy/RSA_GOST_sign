@@ -73,9 +73,8 @@ class SignatureApp:
         self.back_button.pack(side="left", padx=(0, 10))  # Показываем кнопку "Назад"
         self.title_label.config(text="ГОСТ Цифровая подпись")
         
-        # TODO: Создать фрейм ГОСТ (будет реализовано позже)
-        ttk.Label(self.content_frame, text="ГОСТ подпись будет добавлена позже",
-                 style='TLabel').pack(pady=20)
+        gost_frame = gost.create_gost_frame(self.content_frame)
+        gost_frame.pack(fill="both", expand=True)
 
 def main():
     root = tk.Tk()
