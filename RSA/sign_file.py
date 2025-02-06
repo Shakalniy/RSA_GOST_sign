@@ -10,9 +10,10 @@ size = 1024
 main_folder = 'signed_files'
 
 
-def sign_file():
+def sign_file(file_path):
     # конвертация текста
-    file_name = uni.input_file_name("Введите имя подписываемого файла: ")
+    # file_name = uni.input_file_name("Введите имя подписываемого файла: ")
+    file_name = file_path.split('/')[-1].split('.')[0]
     t = time.time()
 
     # генерация p и q
@@ -40,17 +41,17 @@ def sign_file():
     print("e = ", e)
     print("d = ", d)
     
-    folder_path = main_folder + "/" + "sign_" + file_name.split('.')[0]
+    folder_path = main_folder + "/" + "sign_" + file_name
     uni.create_folder(folder_path)
-    uni.safe_file(folder_path + "/open_key_" + file_name.split('.')[0] + ".txt", str(e) + "\n" + str(n))
+    uni.safe_file(folder_path + "/open_key_" + file_name + ".txt", str(e) + "\n" + str(n))
 
-    bytes = convert_file.convert_file_to_bits(file_name, n)
+    bytes = convert_file.convert_file_to_bits(file_path, n)
     # хэширование
     hash = int.from_bytes(hashlib.sha256(bytes.encode()).digest())
 
     # подпись
     sign = uni.power(hash, d, n)
-    uni.safe_file(folder_path + "/sign_" + file_name.split('.')[0] + ".txt", str(sign))
+    uni.safe_file(folder_path + "/sign_" + file_name + ".txt", str(sign))
 
     t = (time.time() - t).__round__(2)
     print("\nВремя работы программы:", t)
