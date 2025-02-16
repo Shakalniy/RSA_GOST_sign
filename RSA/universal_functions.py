@@ -58,3 +58,11 @@ def safe_file(file_name, n):
     with open(file_name, 'w') as f:
         f.write(n)
     print(f"Файл {file_name} сохранен.")
+
+
+def check_file_exists(file_path):
+    try:
+        with open(file_path, 'r') as f:
+            return True
+    except FileNotFoundError:
+        return False
