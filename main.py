@@ -7,7 +7,7 @@ class SignatureApp:
     def __init__(self, root):
         self.root = root
         self.root.title("Цифровая подпись")
-        self.root.geometry("500x500")
+        self.root.geometry("500x600")
         
         # Создание стиля
         self.style = ttk.Style()
