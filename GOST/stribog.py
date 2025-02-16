@@ -1,5 +1,4 @@
 from GOST.constants.stribog_constants import IV_512, IV_256, IV_512_HEX, IV_256_HEX, S_BOX, P_TABLE, L_MATRIX, C, block_size
-# from constants.stribog_constants import block_size, IV_512, IV_256, IV_512_HEX, IV_256_HEX, S_BOX, P_TABLE, L_MATRIX, C
 
 
 def initialize_hash_function(bit_size: int):
@@ -41,7 +40,6 @@ def p_transform(block: bytes) -> bytes:
 
 def l_transform(block: bytes) -> bytes:
     result = bytearray(64)
-    # Перебираем первые 8 байт входного блока
     for i in range(8):
         for j in range(8):
             if (block[i] >> j) & 1:
@@ -82,14 +80,19 @@ def add_modulo(a: int, b: int) -> bytes:
     return (a + b).to_bytes(block_size, 'big')
 
 
+def add_mod512(a: bytes, b: bytes) -> bytes:
+    a_int = int.from_bytes(a, 'big')
+    b_int = int.from_bytes(b, 'big')
+    s_int = (a_int + b_int) % (1 << (block_size * 8))
+    return s_int.to_bytes(block_size, 'big')
+
+
 def process_message_block(h: bytes, N: bytes, Σ: bytes, blocks: list) -> (bytes, bytes, bytes):
     block_bit_length = block_size * 8  # 512 бит
     for m in blocks:
         h = g_N(h, m, N)
-        N = add_modulo(int.from_bytes(N, 'big'), block_bit_length)
-        m_int = int.from_bytes(m, 'big')
-        Σ_int = int.from_bytes(Σ, 'big')
-        Σ = add_modulo(Σ_int, m_int)
+        N = add_mod512(N, bytes(block_bit_length))
+        Σ = add_mod512(Σ, m)
     return h, N, Σ
 
 
@@ -102,19 +105,7 @@ def final_transformation(h, Σ, N, bit_size):
 def start_stribog(M, size):
     M_bytes = M.encode('utf-8')
     h, N, Σ = initialize_hash_function(size)
-
     blocks = split_message_into_blocks(M_bytes)
-
     h, N, Σ = process_message_block(h, N, Σ, blocks)
     h = final_transformation(h, Σ, N, size)
     return h.hex()
-
-
-# if __name__ == '__main__':
-#     M = 'abc'
-#     M_hex = "FF00000000000000000000000000000000000000000000000000000000000000"
-#     M_bytes = bytes.fromhex(M_hex)
-#     h_256 = start_stribog(M_bytes, 256)
-#     h_512 = start_stribog(M_bytes, 512)
-#     print(h_256.hex())
-#     print(h_512.hex())
