@@ -1,5 +1,5 @@
-# from GOST.constants.stribog_constants import IV_512, IV_256, IV_512_HEX, IV_256_HEX, S_BOX, P_TABLE, L_MATRIX, C
-from constants.stribog_constants import IV_512, IV_256, IV_512_HEX, IV_256_HEX, S_BOX, P_TABLE, L_MATRIX, C
+from GOST.constants.stribog_constants import IV_512, IV_256, IV_512_HEX, IV_256_HEX, S_BOX, P_TABLE, L_MATRIX, C, block_size
+# from constants.stribog_constants import block_size, IV_512, IV_256, IV_512_HEX, IV_256_HEX, S_BOX, P_TABLE, L_MATRIX, C
 
 
 def initialize_hash_function(bit_size: int):
@@ -10,25 +10,25 @@ def initialize_hash_function(bit_size: int):
     else:
         raise ValueError("Допустимы только 256 или 512 бит.")
     
-    N = bytes(64)
-    Z = bytes(64)
-    return h, N, Z
+    N = bytes(block_size)
+    Σ = bytes(block_size)
+    return h, N, Σ
+
+
+def pad_message(message: bytes) -> bytes:
+    pad_len = block_size - (len(message) % block_size)
+    if pad_len == 0:
+        pad_len = block_size
+    # Дополнение: сначала сообщение, затем 0x01, затем (pad_len-1) нулей.
+    return message + bytes([0x01]) + bytes(pad_len - 1)
 
 
 def split_message_into_blocks(message: bytes) -> list:
-    block_size = 64
-    length_in_bits = len(message) * 8
-    message += b'\x80'
-    padding_size = (block_size - (len(message) % block_size)) % block_size
-    message += b'\x00' * padding_size
-    message += length_in_bits.to_bytes(64, 'little')
-    return [message[i:i+block_size] for i in range(0, len(message), block_size)]
-
-
-def xor_transform(block1: bytes, block2: bytes) -> bytes:
-    if not isinstance(block1, (bytes, bytearray)) or not isinstance(block2, (bytes, bytearray)):
-        raise TypeError("Both arguments must be bytes or bytearray")
-    return bytes(a ^ b for a, b in zip(block1, block2))
+    padded_message = pad_message(message)
+    blocks = []
+    for i in range(0, len(padded_message), block_size):
+        blocks.append(padded_message[i:i + block_size])
+    return blocks
 
 
 def s_transform(block: bytes) -> bytes:
@@ -40,16 +40,15 @@ def p_transform(block: bytes) -> bytes:
 
 
 def l_transform(block: bytes) -> bytes:
-    """ L-преобразование """
-    result = bytearray(64)  # Результирующий блок из 64 байт
-    for i in range(8):  # Перебираем каждый байт входного блока (8 байт)
-        for j in range(8):  # Перебираем каждый бит в текущем байте
-            if (block[i] >> j) & 1:  # Если j-й бит i-го байта равен 1
-                # Добавляем соответствующую строку матрицы L к результату
-                if j < len(L_MATRIX) and i < len(L_MATRIX[j]):  # Проверяем границы
-                    l_value = L_MATRIX[j][i].to_bytes(8, 'big')  # Преобразуем число в байты
-                    for k in range(8):  # Перебираем все 8 байт строки матрицы
-                        result[k + i * 8] ^= l_value[k]
+    result = bytearray(64)
+    # Перебираем первые 8 байт входного блока
+    for i in range(8):
+        for j in range(8):
+            if (block[i] >> j) & 1:
+                if j < len(L_MATRIX) and i < len(L_MATRIX[j]):
+                    l_value = L_MATRIX[j][i].to_bytes(8, 'big')
+                    for k in range(8):
+                        result[i * 8 + k] ^= l_value[k]
     return bytes(result)
 
 
@@ -57,39 +56,65 @@ def lps_transform(block):
     return l_transform(p_transform(s_transform(block)))
 
 
+def xor_transform(block1: bytes, block2: bytes) -> bytes:
+    if not isinstance(block1, (bytes, bytearray)) or not isinstance(block2, (bytes, bytearray)):
+        raise TypeError("Both arguments must be bytes or bytearray")
+    return bytes(a ^ b for a, b in zip(block1, block2))
+
+
 def e_transform(K, m):
     state = xor_transform(m, K)
     for i in range(12):
         state = lps_transform(state)
         K = lps_transform(xor_transform(K, C[i]))
+
     return xor_transform(state, K)
 
 
-def process_message_block(h, N, Z, blocks):
-    for block in blocks:
-        K = lps_transform(xor_transform(h, N))
-        enc_block = e_transform(K, block)
-        h = xor_transform(enc_block, xor_transform(h, block))
-        N = (int.from_bytes(N, 'big') + 512).to_bytes(64, 'big')
-        Z = xor_transform(Z, block)
-    return h, N, Z
+def g_N(h, m, N):
+    K = xor_transform(h, N)
+    K = lps_transform(K)
+    enc_block = e_transform(K, m)
+    return xor_transform(xor_transform(enc_block, h), m)
 
 
-def final_transformation(h, Z):
-    return lps_transform(xor_transform(h, Z))
+def add_modulo(a: int, b: int) -> bytes:
+    return (a + b).to_bytes(block_size, 'big')
+
+
+def process_message_block(h: bytes, N: bytes, Σ: bytes, blocks: list) -> (bytes, bytes, bytes):
+    block_bit_length = block_size * 8  # 512 бит
+    for m in blocks:
+        h = g_N(h, m, N)
+        N = add_modulo(int.from_bytes(N, 'big'), block_bit_length)
+        m_int = int.from_bytes(m, 'big')
+        Σ_int = int.from_bytes(Σ, 'big')
+        Σ = add_modulo(Σ_int, m_int)
+    return h, N, Σ
+
+
+def final_transformation(h, Σ, N, bit_size):
+    h = g_N(h, N, bytes(block_size))
+    h = g_N(h, Σ, bytes(block_size))
+    return h[32:] if bit_size == 256 else h
 
 
 def start_stribog(M, size):
-    h, N, Z = initialize_hash_function(size)
-    blocks = split_message_into_blocks(M.encode())
-    h, N, Z = process_message_block(h, N, Z, blocks)
-    h = final_transformation(h, Z)
-    return h[:32] if size == 256 else h
+    M_bytes = M.encode('utf-8')
+    h, N, Σ = initialize_hash_function(size)
+
+    blocks = split_message_into_blocks(M_bytes)
+
+    h, N, Σ = process_message_block(h, N, Σ, blocks)
+    h = final_transformation(h, Σ, N, size)
+    return h.hex()
 
 
-if __name__ == '__main__':
-    M = 'abc'
-    h_512 = start_stribog(M, 512)
-    print(h_512.hex())
-    h_256 = start_stribog(M, 256)
-    print(h_256.hex())
+# if __name__ == '__main__':
+#     M = 'abc'
+#     M_hex = "FF00000000000000000000000000000000000000000000000000000000000000"
+#     M_bytes = bytes.fromhex(M_hex)
+#     h_256 = start_stribog(M_bytes, 256)
+#     h_512 = start_stribog(M_bytes, 512)
+#     print(h_256.hex())
+#     print(h_512.hex())

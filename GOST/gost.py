@@ -59,13 +59,17 @@ class GOSTFrame(ttk.Frame):
         status_label.pack(pady=20)
     
     def setup_hash_frame(self, parent):
+        # Основной фрейм с возможностью расширения
+        main_frame = ttk.Frame(parent)
+        main_frame.pack(fill="both", expand=True, padx=10, pady=10)
+        
         # Фрейм для ввода данных
-        input_frame = ttk.LabelFrame(parent, text="Хеширование по ГОСТ 34.11-2018", padding=10)
-        input_frame.pack(fill="x", pady=10)
+        input_frame = ttk.LabelFrame(main_frame, text="Хеширование по ГОСТ 34.11-2018", padding=10)
+        input_frame.pack(fill="x", pady=5)
         
         # Текстовое поле для ввода данных
         self.hash_input = tk.Text(input_frame, height=5, width=50)
-        self.hash_input.pack(pady=10)
+        self.hash_input.pack(fill="x", pady=5)
         
         # Выбор размера хеш-кода
         size_frame = ttk.Frame(input_frame)
@@ -82,13 +86,23 @@ class GOSTFrame(ttk.Frame):
         # Кнопка хеширования
         hash_button = ttk.Button(input_frame, text="Вычислить хеш",
                                command=self.compute_hash)
-        hash_button.pack(pady=10)
+        hash_button.pack(pady=5)
         
-        # Результат хеширования
-        self.hash_result = tk.StringVar()
-        result_label = ttk.Label(input_frame, textvariable=self.hash_result,
-                               wraplength=400)
-        result_label.pack(pady=10)
+        # Фрейм для вывода результата
+        result_frame = ttk.LabelFrame(main_frame, text="Результат хеширования", padding=10)
+        result_frame.pack(fill="both", expand=True, pady=5)
+        
+        # Текстовое поле для вывода результата с собственной прокруткой
+        result_scroll = ttk.Scrollbar(result_frame)
+        result_scroll.pack(side="right", fill="y")
+        
+        self.hash_result_text = tk.Text(result_frame, height=10, width=50, wrap=tk.WORD,
+                                      yscrollcommand=result_scroll.set)
+        self.hash_result_text.pack(side="left", fill="both", expand=True)
+        result_scroll.config(command=self.hash_result_text.yview)
+        
+        # Делаем текстовое поле только для чтения
+        self.hash_result_text.config(state="disabled")
     
     def browse_file(self):
         filename = filedialog.askopenfilename()
@@ -130,8 +144,12 @@ class GOSTFrame(ttk.Frame):
             return
         
         try:
-            h, N, Z = stribog.start_stribog(input_text, hash_size)
-            self.hash_result.set(f"Инициализация хеша: h={h}, N={N}, Z={Z}")
+            h = stribog.start_stribog(input_text, hash_size)
+            # Обновляем текстовое поле с результатом
+            self.hash_result_text.config(state="normal")  # Разрешаем редактирование
+            self.hash_result_text.delete("1.0", tk.END)  # Очищаем предыдущий результат
+            self.hash_result_text.insert("1.0", f"Вычисленный хеш: h={h}")
+            self.hash_result_text.config(state="disabled")  # Запрещаем редактирование
         except Exception as e:
             messagebox.showerror("Ошибка", f"Ошибка при хешировании: {str(e)}")
 

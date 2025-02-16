@@ -34,4 +34,5 @@ __pypackages__/
 *.pdf
 signed_files/
 GOST/stribog_neyron.py
+GOST/stribog_test.py
 *.txt
