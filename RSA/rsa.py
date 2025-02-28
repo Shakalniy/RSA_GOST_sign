@@ -7,33 +7,37 @@ class RSAFrame(ttk.Frame):
     def __init__(self, parent):
         super().__init__(parent)
         
-        # Фрейм для файла
-        file_frame = ttk.LabelFrame(self, text="Выбор файла", padding=10)
+        self.style = ttk.Style()
+        self.style.configure('TLabel', font=('Arial', 10))
+        self.style.configure('TButton', font=('Arial', 10))
+        self.style.configure('TEntry', font=('Arial', 10))
+        self.style.configure('TLabelframe', font=('Arial', 10))
+        self.style.configure('TLabelframe.Label', font=('Arial', 10))
+        
+        file_frame = ttk.LabelFrame(self, text="File Selection", padding=10)
         file_frame.pack(fill="x", pady=10)
         
         self.file_path = tk.StringVar()
-        file_entry = ttk.Entry(file_frame, textvariable=self.file_path, width=50)
-        file_entry.pack(side="left", padx=5)
+        file_entry = ttk.Entry(file_frame, textvariable=self.file_path)
+        file_entry.pack(side="left", padx=5, fill="x", expand=True)
         
-        browse_button = ttk.Button(file_frame, text="Обзор",
+        browse_button = ttk.Button(file_frame, text="Browse",
                                  command=self.browse_file)
         browse_button.pack(side="left", padx=5)
         
-        # Фрейм для кнопок операций
-        operations_frame = ttk.LabelFrame(self, text="Операции", padding=10)
+        operations_frame = ttk.LabelFrame(self, text="Operations", padding=10)
         operations_frame.pack(fill="x", pady=10)
         
         sign_button = ttk.Button(operations_frame, 
-                               text="Подписать файл",
+                               text="Sign File",
                                command=self.sign_file)
         sign_button.pack(pady=5, fill="x")
         
         check_button = ttk.Button(operations_frame,
-                                text="Проверить подпись",
+                                text="Check Signature",
                                 command=self.check_signature)
         check_button.pack(pady=5, fill="x")
         
-        # Статус операции
         self.status_var = tk.StringVar()
         status_label = ttk.Label(self, textvariable=self.status_var,
                                wraplength=400)
@@ -46,30 +50,32 @@ class RSAFrame(ttk.Frame):
     
     def sign_file(self):
         if not self.file_path.get():
-            messagebox.showerror("Ошибка", "Выберите файл для подписи")
+            messagebox.showerror("Error", "Please select a file to sign")
             return
-            
+        
         try:
             sign_file.sign_file(self.file_path.get())
-
-            self.status_var.set("Файл успешно подписан!")
-            
+            self.status_var.set("File signed successfully")
+            messagebox.showinfo("Success", "File signed successfully")
         except Exception as e:
-            messagebox.showerror("Ошибка", f"Ошибка при подписи файла: {str(e)}")
-            self.status_var.set("Ошибка при подписи файла")
+            self.status_var.set(f"Error: {str(e)}")
+            messagebox.showerror("Error", str(e))
     
     def check_signature(self):
         if not self.file_path.get():
-            messagebox.showerror("Ошибка", "Выберите файл для проверки")
+            messagebox.showerror("Error", "Please select a file to check")
             return
-            
+        
         try:
             result = check_sign.check_sign(self.file_path.get())
-            self.status_var.set(result)
-            
+            self.status_var.set("Signature is valid" if result else "Signature is invalid")
+            if result:
+                messagebox.showinfo("Success", "Signature is valid")
+            else:
+                messagebox.showwarning("Warning", "Signature is invalid")
         except Exception as e:
-            messagebox.showerror("Ошибка", f"Ошибка при проверке подписи: {str(e)}")
-            self.status_var.set("Ошибка при проверке подписи")
+            self.status_var.set(f"Error: {str(e)}")
+            messagebox.showerror("Error", str(e))
 
 
 def create_rsa_frame(parent):
