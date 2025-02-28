@@ -1,4 +1,4 @@
-import RSA.universal_functions as uni
+import universal_functions as uni
 
 
 def _lukas_extra_strong_params(n):
@@ -15,9 +15,9 @@ def _lukas_extra_strong_params(n):
 
 
 def jacobi_symbol(k, n):
-    k %= n  # деление по модулю
+    k %= n
     if not k:
-        return int(n == 1)  # (1, 1)
+        return int(n == 1)
     if n == 1 or k == 1:
         return 1
     if uni.gcd(k, n) != 1:
@@ -26,11 +26,11 @@ def jacobi_symbol(k, n):
     result = 1
     while k != 0:
         while k % 2 == 0 and k > 0:
-            k >>= 1  # / 2
+            k >>= 1
             if n % 8 in (3, 5):
                 result = -result
         k, n = n, k
-        if k % 4 == n % 4 == 3:  # квадратичный закон взаимности
+        if k % 4 == n % 4 == 3:
             result = -result
         k %= n
     return result

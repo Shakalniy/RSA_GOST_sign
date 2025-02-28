@@ -5,34 +5,34 @@ def check_constants():
     print("512-bit IV (bytes):", IV_512)
     print("256-bit IV (bytes):", IV_256)
 
-    # Вывод в шестнадцатеричном формате
+    # Output in hexadecimal format
     print("512-bit IV (hex):", IV_512_HEX)
     print("256-bit IV (hex):", IV_256_HEX)
 
-    # Проверка длины массива
+    # Check array length
     print("Length of S_BOX:", len(S_BOX))
 
-    # Вывод первых 10 элементов для проверки
+    # Output first 10 elements for verification
     print("First 10 elements of S_BOX:", S_BOX[:10])
 
-    # Проверка длины массива
+    # Check array length
     print("Length of P:", len(P_TABLE))
 
-    # Вывод первых 10 элементов для проверки
+    # Output first 10 elements for verification
     print("First 10 elements of P:", P_TABLE[:10])
 
-    # Проверка размерности матрицы
+    # Check matrix dimensions
     print("Matrix L dimensions:", len(L_MATRIX), "x", len(L_MATRIX[0]))
 
-    # Вывод первых двух строк для проверки
+    # Output first two rows for verification
     print("First two rows of matrix L:")
     for row in L_MATRIX[:2]:
         print(row)
     
-    # Проверка длины массива C
+    # Check array C length
     print("Length of array C:", len(C))
 
-    # Вывод первых двух элементов для проверки
+    # Output first two elements for verification
     print("First two elements of array C:")
     for c in C[:2]:
         print(c)

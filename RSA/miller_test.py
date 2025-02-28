@@ -1,5 +1,5 @@
 import random
-import RSA.universal_functions as uni
+import universal_functions as uni
 
 
 def is_prime_miller(n, k):

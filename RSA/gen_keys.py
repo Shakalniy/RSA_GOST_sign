@@ -1,6 +1,6 @@
 import math
 import random
-import RSA.universal_functions as uni
+import universal_functions as uni
 
 
 def n_bit_random(n):
