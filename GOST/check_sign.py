@@ -12,14 +12,14 @@ def string_to_point(point_str, p, a, b):
     if len(coords) != 3:
         raise ValueError("String must contain 3 coordinates: (x : y : z)")
         
-        x = int(coords[0])
-        y = int(coords[1])
-        z = int(coords[2])
+    x = int(coords[0])
+    y = int(coords[1])
+    z = int(coords[2])
         
-        if z != 1:
-            raise ValueError("Only affine coordinates (z = 1) are supported")
+    if z != 1:
+        raise ValueError("Only affine coordinates (z = 1) are supported")
         
-        F = GF(p)
+    F = GF(p)
     try:
         E = EllipticCurve(F, [a, b])
     except ValueError:
