@@ -1,5 +1,7 @@
 # Byte-compiled / optimized / DLL files
 __pycache__/
+*/__pycache__/
+*/**/__pycache__/
 *.py[cod]
 *$py.class
 
@@ -33,6 +35,7 @@ __pypackages__/
 
 *.pdf
 signed_files/
-GOST/stribog_neyron.py
-GOST/stribog_test.py
+*test*.py
+Miniforge3-Linux-x86_64.sh
+GOST/check_params.py
 *.txt

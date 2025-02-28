@@ -7,101 +7,93 @@ class GOSTFrame(ttk.Frame):
     def __init__(self, parent):
         super().__init__(parent)
         
-        # Создание вкладок
+        self.style = ttk.Style()
+        self.style.configure('TLabel', font=('Arial', 10))
+        self.style.configure('TButton', font=('Arial', 10))
+        self.style.configure('TEntry', font=('Arial', 10))
+        self.style.configure('TLabelframe', font=('Arial', 10))
+        self.style.configure('TLabelframe.Label', font=('Arial', 10))
+        self.style.configure('TNotebook', font=('Arial', 10))
+        self.style.configure('TNotebook.Tab', font=('Arial', 10))
+        
         self.notebook = ttk.Notebook(self)
         self.notebook.pack(fill="both", expand=True, padx=10, pady=10)
         
-        # Вкладка "Цифровая подпись"
         sign_frame = ttk.Frame(self.notebook)
-        self.notebook.add(sign_frame, text="Цифровая подпись")
+        self.notebook.add(sign_frame, text="Digital Signature")
         
-        # Вкладка "Хеширование"
         hash_frame = ttk.Frame(self.notebook)
-        self.notebook.add(hash_frame, text="Хеширование")
+        self.notebook.add(hash_frame, text="Hashing")
         
-        # Настройка вкладки "Цифровая подпись"
         self.setup_sign_frame(sign_frame)
         
-        # Настройка вкладки "Хеширование"
         self.setup_hash_frame(hash_frame)
     
     def setup_sign_frame(self, parent):
-        # Фрейм для файла
-        file_frame = ttk.LabelFrame(parent, text="Выбор файла", padding=10)
+        file_frame = ttk.LabelFrame(parent, text="File Selection", padding=10)
         file_frame.pack(fill="x", pady=10)
         
         self.file_path = tk.StringVar()
-        file_entry = ttk.Entry(file_frame, textvariable=self.file_path, width=50)
-        file_entry.pack(side="left", padx=5)
+        file_entry = ttk.Entry(file_frame, textvariable=self.file_path)
+        file_entry.pack(side="left", padx=5, fill="x", expand=True)
         
-        browse_button = ttk.Button(file_frame, text="Обзор",
+        browse_button = ttk.Button(file_frame, text="Browse",
                                  command=self.browse_file)
         browse_button.pack(side="left", padx=5)
         
-        # Фрейм для кнопок операций
-        operations_frame = ttk.LabelFrame(parent, text="Операции", padding=10)
+        operations_frame = ttk.LabelFrame(parent, text="Operations", padding=10)
         operations_frame.pack(fill="x", pady=10)
         
         sign_button = ttk.Button(operations_frame, 
-                               text="Подписать файл",
+                               text="Sign File",
                                command=self.sign_file)
         sign_button.pack(pady=5, fill="x")
         
         check_button = ttk.Button(operations_frame,
-                                text="Проверить подпись",
+                                text="Check Signature",
                                 command=self.check_signature)
         check_button.pack(pady=5, fill="x")
         
-        # Статус операции
         self.status_var = tk.StringVar()
         status_label = ttk.Label(parent, textvariable=self.status_var,
                                wraplength=400)
         status_label.pack(pady=20)
     
     def setup_hash_frame(self, parent):
-        # Основной фрейм с возможностью расширения
         main_frame = ttk.Frame(parent)
         main_frame.pack(fill="both", expand=True, padx=10, pady=10)
         
-        # Фрейм для ввода данных
-        input_frame = ttk.LabelFrame(main_frame, text="Хеширование по ГОСТ 34.11-2018", padding=10)
+        input_frame = ttk.LabelFrame(main_frame, text="Hashing by GOST 34.11-2018", padding=10)
         input_frame.pack(fill="x", pady=5)
         
-        # Текстовое поле для ввода данных
-        self.hash_input = tk.Text(input_frame, height=5, width=50)
+        self.hash_input = tk.Text(input_frame, height=5, width=50, font=('Arial', 10))
         self.hash_input.pack(fill="x", pady=5)
         
-        # Выбор размера хеш-кода
         size_frame = ttk.Frame(input_frame)
         size_frame.pack(fill="x", pady=5)
         
-        ttk.Label(size_frame, text="Размер хеш-кода:").pack(side="left", padx=5)
+        ttk.Label(size_frame, text="Hash size:").pack(side="left", padx=5)
         
         self.hash_size = tk.StringVar(value="256")
         sizes = ["256", "512"]
-        size_dropdown = ttk.Combobox(size_frame, textvariable=self.hash_size, 
+        size_dropdown = ttk.Combobox(size_frame, textvariable=self.hash_size,
                                     values=sizes, state="readonly", width=10)
         size_dropdown.pack(side="left", padx=5)
         
-        # Кнопка хеширования
-        hash_button = ttk.Button(input_frame, text="Вычислить хеш",
+        hash_button = ttk.Button(input_frame, text="Calculate Hash",
                                command=self.compute_hash)
         hash_button.pack(pady=5)
         
-        # Фрейм для вывода результата
-        result_frame = ttk.LabelFrame(main_frame, text="Результат хеширования", padding=10)
+        result_frame = ttk.LabelFrame(main_frame, text="Hashing Result", padding=10)
         result_frame.pack(fill="both", expand=True, pady=5)
         
-        # Текстовое поле для вывода результата с собственной прокруткой
         result_scroll = ttk.Scrollbar(result_frame)
         result_scroll.pack(side="right", fill="y")
         
-        self.hash_result_text = tk.Text(result_frame, height=10, width=50, wrap=tk.WORD,
-                                      yscrollcommand=result_scroll.set)
+        self.hash_result_text = tk.Text(result_frame, height=10, width=50, yscrollcommand=result_scroll.set, font=('Arial', 10))
         self.hash_result_text.pack(side="left", fill="both", expand=True)
         result_scroll.config(command=self.hash_result_text.yview)
         
-        # Делаем текстовое поле только для чтения
         self.hash_result_text.config(state="disabled")
     
     def browse_file(self):
@@ -111,53 +103,53 @@ class GOSTFrame(ttk.Frame):
     
     def sign_file(self):
         if not self.file_path.get():
-            messagebox.showerror("Ошибка", "Выберите файл для подписи")
+            messagebox.showerror("Error", "Please select a file to sign")
             return
-            
+        
         try:
             sign_file.sign_file(self.file_path.get())
-            self.status_var.set("Файл успешно подписан!")
-            
+            self.status_var.set("File signed successfully")
+            messagebox.showinfo("Success", "File signed successfully")
         except Exception as e:
-            messagebox.showerror("Ошибка", f"Ошибка при подписи файла: {str(e)}")
-            self.status_var.set("Ошибка при подписи файла")
+            messagebox.showerror("Error", f"Error signing file: {str(e)}")
+            self.status_var.set("Error signing file")
     
     def check_signature(self):
         if not self.file_path.get():
-            messagebox.showerror("Ошибка", "Выберите файл для проверки")
+            messagebox.showerror("Error", "Please select a file to check")
             return
-            
+        
         try:
             result = check_sign.check_sign(self.file_path.get())
             self.status_var.set(result)
-            
+            if result == "Signature is valid":
+                messagebox.showinfo("Success", result)
+            elif result == "Signature not found":
+                messagebox.showwarning("Warning", result)
+            else:
+                messagebox.showwarning("Warning", result)
         except Exception as e:
-            messagebox.showerror("Ошибка", f"Ошибка при проверке подписи: {str(e)}")
-            self.status_var.set("Ошибка при проверке подписи")
+            messagebox.showerror("Error", f"Error checking signature: {str(e)}")
+            self.status_var.set("Error checking signature")
     
     def compute_hash(self):
         input_text = self.hash_input.get("1.0", tk.END).strip()
         hash_size = int(self.hash_size.get())
         
         if not input_text:
-            messagebox.showerror("Ошибка", "Введите текст для хеширования")
+            messagebox.showerror("Error", "Please enter text to hash")
             return
         
         try:
             h = stribog.start_stribog(input_text, hash_size)
-            # Обновляем текстовое поле с результатом
-            self.hash_result_text.config(state="normal")  # Разрешаем редактирование
-            self.hash_result_text.delete("1.0", tk.END)  # Очищаем предыдущий результат
-            self.hash_result_text.insert("1.0", f"Вычисленный хеш: h={h}")
-            self.hash_result_text.config(state="disabled")  # Запрещаем редактирование
+            
+            self.hash_result_text.config(state="normal")  # Allow editing
+            self.hash_result_text.delete("1.0", tk.END)  # Clear previous result
+            self.hash_result_text.insert("1.0", f"Calculated hash: h={h}")
+            self.hash_result_text.config(state="disabled")  # Disallow editing
         except Exception as e:
-            messagebox.showerror("Ошибка", f"Ошибка при хешировании: {str(e)}")
+            messagebox.showerror("Error", f"Error hashing: {str(e)}")
 
 
 def create_gost_frame(parent):
     return GOSTFrame(parent)
-
-
-def gost():
-    # Эта функция больше не используется напрямую, но оставлена для обратной совместимости
-    pass

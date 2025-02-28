@@ -1,22 +1,19 @@
 from RSA import gen_keys
 from RSA import gen_prime_nums as prime
-from RSA import universal_functions as uni
+import universal_functions as uni
 from RSA import convert_file
 import time
 import hashlib
 
 
 size = 1024
-main_folder = 'signed_files'
+main_folder = 'signed_files/RSA'
 
 
 def sign_file(file_path):
-    # конвертация текста
-    # file_name = uni.input_file_name("Введите имя подписываемого файла: ")
     file_name = file_path.split('/')[-1].split('.')[0]
     t = time.time()
 
-    # генерация p и q
     is_correct = False
     p, q, n = 0, 0, 0
     while not is_correct:
@@ -26,18 +23,17 @@ def sign_file(file_path):
             is_correct = True
 
     n = p * q
-    print("Сгенерированные параметры:")
+    print("Generated parameters:")
     print("p = ", p)
     print("q = ", q)
     print("n = ", n)
 
-    # генерация ключей
     phi_n = (p - 1) * (q - 1)
     nod = uni.gcd(p-1, q-1)
     nok = phi_n // nod
     e, d = gen_keys.gen_keys(n, phi_n, nok)
 
-    print("Сгенерированное ключи:")
+    print("Generated keys:")
     print("e = ", e)
     print("d = ", d)
     
@@ -46,12 +42,10 @@ def sign_file(file_path):
     uni.safe_file(folder_path + "/open_key_" + file_name + ".txt", str(e) + "\n" + str(n))
 
     bytes = convert_file.convert_file_to_bits(file_path, n)
-    # хэширование
     hash = int.from_bytes(hashlib.sha256(bytes.encode()).digest())
 
-    # подпись
     sign = uni.power(hash, d, n)
     uni.safe_file(folder_path + "/sign_" + file_name + ".txt", str(sign))
 
     t = (time.time() - t).__round__(2)
-    print("\nВремя работы программы:", t)
+    print("\nProgram execution time:", t)

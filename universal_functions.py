@@ -42,22 +42,22 @@ def input_file_name(prompt, folder=""):
                 return file_name
             break
         except FileNotFoundError:
-            print("Файл не найден.")
+            print("File not found.")
 
 
 def create_folder(file_name):
     try:
         folder_path = file_name.split('.')[0]
         os.makedirs(folder_path, exist_ok=True)
-        print(f"Папка '{folder_path}' успешно создана.")
+        print(f"Folder '{folder_path}' successfully created.")
     except FileExistsError:
-        print(f"Папка '{folder_path}' уже существует.")
+        print(f"Folder '{folder_path}' already exists.")
 
 
 def safe_file(file_name, n):
     with open(file_name, 'w') as f:
         f.write(n)
-    print(f"Файл {file_name} сохранен.")
+    print(f"File {file_name} saved.")
 
 
 def check_file_exists(file_path):
@@ -66,3 +66,20 @@ def check_file_exists(file_path):
             return True
     except FileNotFoundError:
         return False
+
+
+def gcd_extended(num1, num2):
+    if num1 == 0:
+        return num2, 0, 1
+    else:
+        div, x, y = gcd_extended(num2 % num1, num1)
+    return div, y - (num2 // num1) * x, x
+
+    
+def input_number(prompt):
+    while True:
+        try:
+            num = int(input(prompt))
+            return num
+        except ValueError:
+            print("Invalid input. Please enter a number.")
