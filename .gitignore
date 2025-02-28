@@ -35,6 +35,7 @@ __pypackages__/
 
 *.pdf
 signed_files/
-*_test*.py
+*test*.py
 Miniforge3-Linux-x86_64.sh
+GOST/check_params.py
 *.txt
