@@ -3,8 +3,8 @@ from PyQt6.QtWidgets import (QApplication, QMainWindow, QWidget, QVBoxLayout,
                             QPushButton, QLabel, QFrame, QHBoxLayout)
 from PyQt6.QtCore import Qt
 from PyQt6.QtGui import QFont, QIcon, QLinearGradient, QColor, QPalette
-import RSA.rsa_pyqt as rsa
-import GOST.gost_pyqt as gost
+import RSA.rsa as rsa
+import GOST.gost as gost
 
 class SignatureApp(QMainWindow):
     def __init__(self):

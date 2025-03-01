@@ -5,11 +5,14 @@ from PyQt6.QtCore import Qt, pyqtSlot, QTimer
 from PyQt6.QtGui import QFont, QIcon
 from RSA import sign_file, check_sign
 import os
+import weakref
 
 class RSAFrame(QWidget):
     def __init__(self):
         super().__init__()
         self.init_ui()
+        # Словарь для хранения таймеров
+        self.timers = {}
         
     def init_ui(self):
         main_layout = QVBoxLayout(self)
@@ -229,8 +232,28 @@ class RSAFrame(QWidget):
         original_text = button.text()
         button.setText("Скопировано!")
         
-        # Возвращаем исходный текст через 1.5 секунды
-        QTimer.singleShot(1500, lambda: button.setText(original_text))
+        # Если для этой кнопки уже есть таймер, останавливаем его
+        button_id = id(button)
+        if button_id in self.timers:
+            self.timers[button_id].stop()
+        
+        # Создаем новый таймер
+        timer = QTimer(self)
+        timer.setSingleShot(True)
+        
+        # Используем weakref для предотвращения утечек памяти
+        weak_button = weakref.ref(button)
+        
+        def restore_text():
+            btn = weak_button()
+            if btn is not None:
+                btn.setText(original_text)
+        
+        timer.timeout.connect(restore_text)
+        timer.start(1500)
+        
+        # Сохраняем таймер в словаре
+        self.timers[button_id] = timer
     
     def verify_signature(self):
         if not self.file_path.text():
@@ -315,3 +338,10 @@ class RSAFrame(QWidget):
                 font-size: 14px;
                 text-align: center;
             """)
+    
+    def closeEvent(self, event):
+        # Очищаем все таймеры при закрытии
+        for timer in self.timers.values():
+            timer.stop()
+        self.timers.clear()
+        super().closeEvent(event)
