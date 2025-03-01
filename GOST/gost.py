@@ -7,6 +7,7 @@ from PyQt6.QtGui import QFont, QIcon
 from GOST import sign_file, check_sign, stribog
 import os
 import sys
+import weakref
 
 # Добавляем импорт констант
 sys.path.append(os.path.dirname(os.path.dirname(__file__)))
@@ -16,6 +17,8 @@ class GOSTFrame(QWidget):
     def __init__(self):
         super().__init__()
         self.init_ui()
+        # Словарь для хранения таймеров
+        self.timers = {}
         
     def init_ui(self):
         # Main layout
@@ -473,7 +476,7 @@ class GOSTFrame(QWidget):
         
         copy_button = QPushButton("Копировать")
         copy_button.setFixedWidth(120)
-        copy_button.clicked.connect(lambda: self.copy_folder_to_clipboard(folder_path, copy_button))
+        copy_button.clicked.connect(lambda: self.copy_to_clipboard(folder_path, copy_button))
         path_layout.addWidget(copy_button)
         
         layout.addLayout(path_layout)
@@ -485,7 +488,7 @@ class GOSTFrame(QWidget):
         
         dialog.exec()
     
-    def copy_folder_to_clipboard(self, text, button):
+    def copy_to_clipboard(self, text, button):
         clipboard = QApplication.clipboard()
         clipboard.setText(text)
         
@@ -493,8 +496,28 @@ class GOSTFrame(QWidget):
         original_text = button.text()
         button.setText("Скопировано!")
         
-        # Возвращаем исходный текст через 1.5 секунды
-        QTimer.singleShot(1500, lambda: button.setText(original_text))
+        # Если для этой кнопки уже есть таймер, останавливаем его
+        button_id = id(button)
+        if button_id in self.timers:
+            self.timers[button_id].stop()
+        
+        # Создаем новый таймер
+        timer = QTimer(self)
+        timer.setSingleShot(True)
+        
+        # Используем weakref для предотвращения утечек памяти
+        weak_button = weakref.ref(button)
+        
+        def restore_text():
+            btn = weak_button()
+            if btn is not None:
+                btn.setText(original_text)
+        
+        timer.timeout.connect(restore_text)
+        timer.start(1500)
+        
+        # Сохраняем таймер в словаре
+        self.timers[button_id] = timer
     
     @pyqtSlot()
     def check_signature(self):
@@ -787,14 +810,10 @@ class GOSTFrame(QWidget):
         
         # Показываем диалог
         dialog.exec()
-    
-    def copy_to_clipboard(self, text, button):
-        clipboard = QApplication.clipboard()
-        clipboard.setText(text)
-        
-        # Меняем текст кнопки на короткое время
-        original_text = button.text()
-        button.setText("Скопировано!")
-        
-        # Возвращаем исходный текст через 1.5 секунды
-        QTimer.singleShot(1500, lambda: button.setText(original_text))
+
+    def closeEvent(self, event):
+        # Очищаем все таймеры при закрытии
+        for timer in self.timers.values():
+            timer.stop()
+        self.timers.clear()
+        super().closeEvent(event)
