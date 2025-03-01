@@ -39,3 +39,4 @@ signed_files/
 Miniforge3-Linux-x86_64.sh
 GOST/check_params.py
 *.txt
+README_PyQt.md
