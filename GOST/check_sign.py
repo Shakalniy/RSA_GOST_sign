@@ -45,8 +45,9 @@ def get_file_text(file_name):
         return f.read()
 
 
-def check_sign(file_path):
+def check_sign(file_path, l = 256):
     try:
+        print("l = ", l)
         result = ""
         file_name = file_path.split('/')[-1].split('.')[0]
         folder_path = main_folder + "/" + "sign_" + file_name
@@ -62,13 +63,13 @@ def check_sign(file_path):
         M = get_file_text(file_path)
         q, P, Q = get_params(open_key_name)
 
-        l = 256
         r = int(zeta_bin[:l], 2)
         s = int(zeta_bin[l:], 2)
 
         if r > q or s > q: return "Signature is invalid"
 
-        h = int(start_stribog(M, 256), 16)
+        h = int(start_stribog(M, l), 16)
+        print(h)
 
         e = h % q
         if e == 0: e = 1
