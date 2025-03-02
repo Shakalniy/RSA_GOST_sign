@@ -79,3 +79,4 @@ def sign_file(file_path, hash_size=None, constants=None):
 
     t = (time.time() - t).__round__(2)
     print("\nProgram execution time:", t)
+    return folder_path.split('/')[-1]

@@ -137,7 +137,7 @@ class RSAFrame(QWidget):
             
             # Выполняем подпись файла
             file_path = self.file_path.text()
-            sign_file.sign_file(file_path)
+            folder = sign_file.sign_file(file_path)
             
             # Обновляем статус
             self.status_label.setText("Файл успешно подписан")
@@ -152,7 +152,7 @@ class RSAFrame(QWidget):
             """)
             
             # Показываем всплывающее окно с путем к папке
-            folder_path = os.path.dirname(file_path)
+            folder_path = os.path.dirname(file_path) + '/' + folder
             self.show_folder_path_dialog(folder_path)
             
         except Exception as e:

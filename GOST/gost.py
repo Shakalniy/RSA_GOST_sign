@@ -382,9 +382,9 @@ class GOSTFrame(QWidget):
             # Выполняем подпись файла
             if self.use_constants_radio.isChecked():
                 hash_size = 256 if self.hash_256_radio_sign.isChecked() else 512
-                sign_file.sign_file(file_path, hash_size, sign_params_constants)
+                folder = sign_file.sign_file(file_path, hash_size, sign_params_constants)
             else:
-                sign_file.sign_file(file_path)
+                folder = sign_file.sign_file(file_path)
             
             # Обновляем статус
             self.status_label.setText("Файл успешно подписан")
@@ -400,7 +400,7 @@ class GOSTFrame(QWidget):
             """)
             
             # Показываем всплывающее окно с путем к папке
-            folder_path = os.path.dirname(file_path)
+            folder_path = os.path.dirname(file_path) + '/' + folder
             self.show_folder_path_dialog(folder_path)
             
         except Exception as e:
