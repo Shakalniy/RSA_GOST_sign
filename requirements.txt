@@ -1,4 +1,0 @@
-PyQt6>=6.0.0
-sagemath>=9.0
-hashlib
-weakref
