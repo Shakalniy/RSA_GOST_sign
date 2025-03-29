@@ -97,7 +97,10 @@ def final_transformation(h, Σ, N, bit_size):
     return h[32:] if bit_size == 256 else h
 
 def start_stribog(M, size):
-    M_bytes = M.encode('utf-8')
+    try:
+        M_bytes = M.encode('utf-8')
+    except Exception as e:
+        M_bytes = M
     h, N, Σ = initialize_hash_function(size)
     blocks = split_message_into_blocks(M_bytes)
     h, N, Σ = process_message_block(h, N, Σ, blocks)
