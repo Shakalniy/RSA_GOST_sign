@@ -60,7 +60,10 @@ def check_sign(file_path, l = 256):
         t = time.time()
 
         zeta_bin = get_file_text(sign_file_name)
-        M = get_file_text(file_path)
+        try:
+            M = get_file_text(file_path)
+        except Exception as e:
+            M = open(file_path, 'rb').read()
         q, P, Q = get_params(open_key_name)
 
         r = int(zeta_bin[:l], 2)

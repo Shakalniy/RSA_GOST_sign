@@ -67,8 +67,10 @@ def sign_file(file_path, hash_size=None, constants=None):
     folder_path = main_folder + "/" + "sign_" + file_name
     uni.create_folder(folder_path)
     uni.safe_file(folder_path + "/open_key_" + file_name + ".txt", params)
-
-    M = open(file_path, 'r', encoding='utf-8').read()
+    try:
+        M = open(file_path, 'r', encoding='utf-8').read()
+    except Exception as e:
+        M = open(file_path, 'rb').read()
     h = int(start_stribog(M, l), 16)
     r, s = gen_sign(q, P, d, h)
     r_bin = format(r, f'0{l}b')

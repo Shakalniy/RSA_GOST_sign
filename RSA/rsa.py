@@ -304,7 +304,7 @@ class RSAFrame(QWidget):
             # Проверяем подпись
             result = check_sign.check_sign(file_path)
             
-            if result:
+            if result == "Signature is valid.":
                 self.status_label.setText("Подпись верна. Файл не был изменен.")
                 self.status_label.setStyleSheet("""
                     padding: 15px;

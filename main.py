@@ -1,4 +1,13 @@
 import sys
+import os
+
+# Диагностика доступных переменных окружения
+print("DISPLAY =", os.environ.get("DISPLAY", "не установлен"))
+print("XAUTHORITY =", os.environ.get("XAUTHORITY", "не установлен"))
+
+# Пробуем использовать другую платформу - linuxfb
+os.environ["QT_QPA_PLATFORM"] = "linuxfb"
+
 from PyQt6.QtWidgets import (QApplication, QMainWindow, QWidget, QVBoxLayout, 
                             QPushButton, QLabel, QFrame, QHBoxLayout)
 from PyQt6.QtCore import Qt
