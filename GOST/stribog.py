@@ -23,22 +23,12 @@ for a in range(256):
             bb >>= 1
         GF_MUL_TABLE[a][b] = r
 
-# Функции преобразования
 def xor_transform(block1: bytes, block2: bytes) -> bytes:
-    """XOR двух байтовых строк с использованием NumPy"""
     arr1 = np.frombuffer(block1, dtype=np.uint8)
     arr2 = np.frombuffer(block2, dtype=np.uint8)
     return (arr1 ^ arr2).tobytes()
 
-def R(state: bytes) -> bytes:
-    """Функция R с использованием таблицы поиска для умножения в поле Галуа"""
-    t = 0
-    for i in range(block_size):
-        t ^= GF_MUL_TABLE[state[i]][l_vec[i % 8]]
-    return bytes([t]) + state[:-1]
-
 def l_transform(block: bytes) -> bytes:
-    """L-преобразование с развернутым циклом и таблицей поиска"""
     result = bytearray(block)
     for _ in range(16):
         t = 0
@@ -48,21 +38,17 @@ def l_transform(block: bytes) -> bytes:
     return bytes(result)
 
 def s_transform(block: bytes) -> bytes:
-    """S-преобразование с использованием таблицы подстановки"""
     arr = np.frombuffer(block, dtype=np.uint8)
     return bytes(S_BOX[b] for b in arr)
 
 def p_transform(block: bytes) -> bytes:
-    """P-преобразование с использованием таблицы перестановки"""
     arr = np.frombuffer(block, dtype=np.uint8)
     return arr[P_TABLE].tobytes()
 
 def lps_transform(block: bytes) -> bytes:
-    """Комбинированное LPS-преобразование"""
     return l_transform(p_transform(s_transform(block)))
 
 def e_transform(K: bytes, m: bytes) -> bytes:
-    """E-преобразование с 12 раундами"""
     state = xor_transform(m, K)
     for i in range(12):
         state = lps_transform(state)
@@ -70,14 +56,12 @@ def e_transform(K: bytes, m: bytes) -> bytes:
     return xor_transform(state, K)
 
 def g_N(h: bytes, m: bytes, N: bytes) -> bytes:
-    """Функция g_N для обработки блоков"""
     K = xor_transform(h, N)
     K = lps_transform(K)
     enc_block = e_transform(K, m)
     return xor_transform(xor_transform(enc_block, h), m)
 
 def add_mod512(a: bytes, b: bytes) -> bytes:
-    """Сложение по модулю 2^512 с работой на байтах"""
     result = bytearray(block_size)
     carry = 0
     for i in range(block_size - 1, -1, -1):
@@ -86,9 +70,7 @@ def add_mod512(a: bytes, b: bytes) -> bytes:
         carry = temp >> 8
     return bytes(result)
 
-# Основные функции алгоритма
 def initialize_hash_function(bit_size: int):
-    """Инициализация хэш-функции"""
     if bit_size == 512:
         h = IV_512
     elif bit_size == 256:
@@ -100,7 +82,6 @@ def initialize_hash_function(bit_size: int):
     return h, N, Σ
 
 def pad_message(message: bytes) -> bytes:
-    """Добавление паддинга к сообщению"""
     msg_len = len(message)
     pad_len = block_size - (msg_len % block_size)
     if pad_len == block_size:
@@ -109,13 +90,11 @@ def pad_message(message: bytes) -> bytes:
     return message + padding if pad_len > 0 else message + bytes([0x01]) + bytes(block_size - 1)
 
 def split_message_into_blocks(message: bytes):
-    """Генератор для разбиения сообщения на блоки"""
     padded_message = pad_message(message)
     for i in range(0, len(padded_message), block_size):
         yield padded_message[i:i + block_size]
 
 def process_message_block(h: bytes, N: bytes, Σ: bytes, blocks):
-    """Обработка блоков сообщения"""
     block_bit_length = bytes([0] * (block_size - 2) + [0x02, 0x00])  # 512 бит
     for m in blocks:
         h = g_N(h, m, N)
@@ -138,3 +117,19 @@ def start_stribog(M, size):
     h, N, Σ = process_message_block(h, N, Σ, blocks)
     h = final_transformation(h, Σ, N, size)
     return h.hex()
+
+if __name__ == "__main__":
+    import time
+    message = 'Привер'
+    print(f'Входная строка: {message}')
+    t = time.time()
+    h_256 = start_stribog(message, 256)
+    print(f"Длина выходной строки для 256 бит: {256}")
+    print(f"Выходная строка для 256 бит в hex: {h_256}")
+    print(f"Время выполнения хэш-функции длиной 256 бит: {time.time() - t:.5f} сек\n")
+
+    t = time.time()
+    h_512 = start_stribog(message, 512)
+    print(f"Длина выходной строки для 512 бит: {len(h_512) * 4}")
+    print(f"Выходная строка для 512 бит в hex: {h_512}")
+    print(f"Время выполнения хэш-функции длиной 512 бит: {time.time() - t:.5f} сек")
