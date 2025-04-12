@@ -1,3 +1,6 @@
+import sys
+import os
+sys.path.append(os.path.dirname(os.path.dirname(__file__)))
 from RSA import gen_keys
 from RSA import gen_prime_nums as prime
 import universal_functions as uni
@@ -50,3 +53,13 @@ def sign_file(file_path):
     t = (time.time() - t).__round__(2)
     print("\nProgram execution time:", t)
     return folder_path.split('/')[-1]
+
+
+if __name__ == '__main__':
+    from memory_profiler import profile
+    @profile
+    def start_sign():
+        sign_file("GOST/picture.png")
+        pass
+    
+    start_sign()

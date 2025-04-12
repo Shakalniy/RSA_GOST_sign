@@ -1,6 +1,3 @@
-from GOST.gen_params import gen_params
-from GOST.gen_keys import gen_keys
-from GOST.stribog import start_stribog
 from random import randint
 import sys
 import os
@@ -9,6 +6,9 @@ original_dir = os.getcwd()
 sys.path.append(os.path.dirname(os.path.dirname(__file__)))
 import universal_functions as uni
 from sage.all import *
+from GOST.gen_params import gen_params
+from GOST.gen_keys import gen_keys
+from GOST.stribog import start_stribog
 os.chdir(original_dir)
 
 
@@ -25,6 +25,24 @@ def gen_sign(q, P, d, h):
         r = int(C[0]) % q
         s = (r * d + k * e) % q
     return r, s
+
+
+def process_file_in_chunks(file_path, chunk_size=8192):
+    """Обрабатывает файл по частям для экономии памяти"""
+    try:
+        with open(file_path, 'r', encoding='utf-8') as f:
+            while True:
+                chunk = f.read(chunk_size)
+                if not chunk:
+                    break
+                yield chunk, 'text'
+    except UnicodeDecodeError:
+        with open(file_path, 'rb') as f:
+            while True:
+                chunk = f.read(chunk_size)
+                if not chunk:
+                    break
+                yield chunk, 'binary'
 
 
 def sign_file(file_path, hash_size=None, constants=None):
@@ -67,11 +85,25 @@ def sign_file(file_path, hash_size=None, constants=None):
     folder_path = main_folder + "/" + "sign_" + file_name
     uni.create_folder(folder_path)
     uni.safe_file(folder_path + "/open_key_" + file_name + ".txt", params)
-    try:
-        M = open(file_path, 'r', encoding='utf-8').read()
-    except Exception as e:
-        M = open(file_path, 'rb').read()
-    h = int(start_stribog(M, l), 16)
+    
+    # Обрабатываем файл по частям
+    file_content = bytearray()
+    file_type = None
+    
+    for chunk, chunk_type in process_file_in_chunks(file_path):
+        if file_type is None:
+            file_type = chunk_type
+        
+        if file_type == 'text' and isinstance(chunk, str):
+            file_content.extend(chunk.encode('utf-8'))
+        else:
+            file_content.extend(chunk)
+    
+    h = int(start_stribog(bytes(file_content), l), 16)
+    
+    # Освобождаем память
+    del file_content
+    
     r, s = gen_sign(q, P, d, h)
     r_bin = format(r, f'0{l}b')
     s_bin = format(s, f'0{l}b')
