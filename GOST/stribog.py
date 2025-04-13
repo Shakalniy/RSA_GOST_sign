@@ -125,11 +125,14 @@ def initialize_hash_function(bit_size: int):
 
 def pad_message(message: bytes) -> bytes:
     msg_len = len(message)
-    pad_len = block_size - (msg_len % block_size)
-    if pad_len == block_size:
-        pad_len = 0
-    padding = bytes([0x01]) + bytes(pad_len - 1)
-    return message + padding if pad_len > 0 else message + bytes([0x01]) + bytes(block_size - 1)
+    if msg_len % block_size == 0:
+        return message
+    else:
+        pad_len = block_size - (msg_len % block_size)
+        if pad_len == block_size:
+            pad_len = 0
+        padding = bytes([0x01]) + bytes(pad_len - 1)
+        return message + padding if pad_len > 0 else message + bytes([0x01]) + bytes(block_size - 1)
 
 def split_message_into_blocks(message: bytes):
     padded_message = pad_message(message)
