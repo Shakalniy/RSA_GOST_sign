@@ -13,17 +13,17 @@ os.chdir(original_dir)
 
 
 def sea_point_count(p, a, b):
-    print(f"Input parameters: p = {p}, a = {a}, b = {b}")
+    # print(f"Input parameters: p = {p}, a = {a}, b = {b}")
     F = GF(p)
     E = EllipticCurve(F, [a, b])
     if E.is_singular():
         raise ValueError("The curve is singular")
     j = E.j_invariant()
-    print(f"j-invariant: {j}")
+    # print(f"j-invariant: {j}")
     N = E.order()
-    print(f"Number of points (SEA): {N}")
+    # print(f"Number of points (SEA): {N}")
     t = p + 1 - N
-    print(f"Frobenius trace t: {t}")
+    # print(f"Frobenius trace t: {t}")
     return N
 
 
@@ -51,10 +51,10 @@ def chose_primes(p):
 
 
 def check_curve_order(m, j):
-    print(f"Total number of points m = {m}")
-    print(f"j-invariant: {j}")
+    # print(f"Total number of points m = {m}")
+    # print(f"j-invariant: {j}")
     factorization = factor(m)
-    print(f"Factorization of m: {factorization}")
+    # print(f"Factorization of m: {factorization}")
     q = max(f for f, e in factorization if is_prime(f))
     h = m // q 
 
@@ -64,12 +64,12 @@ def check_curve_order(m, j):
     else:
         n = q
 
-    print(f"Group order n = {n}")
-    print(f"Cofactor h = {m} / {n} = {h}")
-    if h > 4:
-        print("Warning: cofactor h > 4, may not be suitable for cryptography")
+    # print(f"Group order n = {n}")
+    # print(f"Cofactor h = {m} / {n} = {h}")
+    # if h > 4:
+    #     print("Warning: cofactor h > 4, may not be suitable for cryptography")
     if n < 2**128:
-        print("Warning: order n is too small for security")
+        # print("Warning: order n is too small for security")
         return False
 
     return n, h
@@ -113,7 +113,7 @@ def check_security(p, a, b, q):
     n = m // q
     if m != n * q or n < 1:
         return False, f"Invalid cofactor: m = {m}, q = {q}, n = {n}"
-    print(f"Cofactor n = {n}")
+    # print(f"Cofactor n = {n}")
 
     j = E.j_invariant()
     if j == 0 or j == 1728:
@@ -137,21 +137,21 @@ def gen_params():
         a, b, j = gen_elliptic_curve_params(p)
         m = sea_point_count(p, a, b)
         if p == m:
-            print("p == m")
+            # print("p == m")
             continue
         res = check_curve_order(m, j)
         if not res:
             continue
         q, n = res
-        print(f"Result: m = {m},\nn = {q},\nh = {n}")
-        print(f"Length: {q.bit_length()}")
+        # print(f"Result: m = {m},\nn = {q},\nh = {n}")
+        # print(f"Length: {q.bit_length()}")
         P = find_base_point(p, a, b, q)
-        print(f"Base point P = {P}")
-        print(f"Check: [q]P = {q * P}")
+        # print(f"Base point P = {P}")
+        # print(f"Check: [q]P = {q * P}")
 
         is_safe, reason = check_security(p, a, b, q)
-        print(f"Security: {is_safe}")
-        print(f"Reason: {reason}")
+        # print(f"Security: {is_safe}")
+        # print(f"Reason: {reason}")
         
         print(f"Time: {time.time() - t}")
         return p, a, b, m, q, P

@@ -117,19 +117,3 @@ def start_stribog(M, size):
     h, N, Σ = process_message_block(h, N, Σ, blocks)
     h = final_transformation(h, Σ, N, size)
     return h.hex()
-
-if __name__ == "__main__":
-    import time
-    message = 'Привер'
-    print(f'Входная строка: {message}')
-    t = time.time()
-    h_256 = start_stribog(message, 256)
-    print(f"Длина выходной строки для 256 бит: {256}")
-    print(f"Выходная строка для 256 бит в hex: {h_256}")
-    print(f"Время выполнения хэш-функции длиной 256 бит: {time.time() - t:.5f} сек\n")
-
-    t = time.time()
-    h_512 = start_stribog(message, 512)
-    print(f"Длина выходной строки для 512 бит: {len(h_512) * 4}")
-    print(f"Выходная строка для 512 бит в hex: {h_512}")
-    print(f"Время выполнения хэш-функции длиной 512 бит: {time.time() - t:.5f} сек")
