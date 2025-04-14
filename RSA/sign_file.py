@@ -3,6 +3,7 @@ import os
 sys.path.append(os.path.dirname(os.path.dirname(__file__)))
 from RSA import gen_keys
 from RSA import gen_prime_nums as prime
+from RSA.sha256 import standard_sha256
 import universal_functions as uni
 from RSA import convert_file
 import time
@@ -45,7 +46,7 @@ def sign_file(file_path):
     uni.safe_file(folder_path + "/open_key_" + file_name + ".txt", str(e) + "\n" + str(n))
 
     bytes = convert_file.convert_file_to_bits(file_path, n)
-    hash = int.from_bytes(hashlib.sha256(bytes.encode()).digest())
+    hash = int.from_bytes(standard_sha256(bytes.encode()))
 
     sign = uni.power(hash, d, n)
     uni.safe_file(folder_path + "/sign_" + file_name + ".txt", str(sign))

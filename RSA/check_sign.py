@@ -1,5 +1,6 @@
 import universal_functions as uni
 from RSA import convert_file
+from RSA.sha256 import standard_sha256
 import time
 import hashlib
 
@@ -26,7 +27,7 @@ def check_sign(file_path):
     t = time.time()
     e, n = get_open_key(open_key_name)
     bytes = convert_file.convert_file_to_bits(file_path, n)
-    hash = int.from_bytes(hashlib.sha256(bytes.encode()).digest())
+    hash = int.from_bytes(standard_sha256(bytes.encode()))
     sign = uni.power(int(get_file_text(sign_file_name)), e, n)
     if sign == hash:
         result = "Signature is valid."
