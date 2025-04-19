@@ -121,9 +121,6 @@ def sha256(message):
         result[i4 + 3] = H[i] & 0xFF
     return bytes(result)
 
-# Прогрев Numba
-sha256(b"test")
-
 
 if __name__ == "__main__":
     import time
