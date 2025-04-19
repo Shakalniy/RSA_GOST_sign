@@ -1,7 +1,13 @@
+import sys
+import os
 import time
+original_dir = os.getcwd()
+sys.path.append(os.path.dirname(os.path.dirname(__file__)))
+import universal_functions as uni
 import universal_functions as uni
 from GOST.stribog import start_stribog
 from sage.all import *
+os.chdir(original_dir)
 
 
 main_folder = 'signed_files/GOST'
@@ -47,8 +53,6 @@ def get_file_text(file_name):
 
 def check_sign(file_path, l = 256):
     try:
-        print("l = ", l)
-        result = ""
         file_name = file_path.split('/')[-1].split('.')[0]
         folder_path = main_folder + "/" + "sign_" + file_name
         sign_file_name = folder_path + "/" + "sign_" + file_name + ".txt"
@@ -72,7 +76,6 @@ def check_sign(file_path, l = 256):
         if r > q or s > q: return "Signature is invalid"
 
         h = int(start_stribog(M, l), 16)
-        print(h)
 
         e = h % q
         if e == 0: e = 1
@@ -95,3 +98,7 @@ def check_sign(file_path, l = 256):
     except Exception as e:
         print(e)
         return "Signature is invalid"
+
+
+if __name__ == "__main__":
+    check_sign("GOST/picture_big.jpg")

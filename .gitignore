@@ -40,3 +40,10 @@ Miniforge3-Linux-x86_64.sh
 GOST/check_params.py
 signed_files/*.txt
 README_PyQt.md
+*.txt
+*.jpg
+*.png
+*.dll
+*.so
+*.*prof
+*.gcda
