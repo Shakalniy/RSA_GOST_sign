@@ -64,10 +64,7 @@ def check_sign(file_path, l = 256):
         t = time.time()
 
         zeta_bin = get_file_text(sign_file_name)
-        try:
-            M = get_file_text(file_path)
-        except Exception as e:
-            M = open(file_path, 'rb').read()
+        M = open(file_path, 'rb').read()
         q, P, Q = get_params(open_key_name)
 
         r = int(zeta_bin[:l], 2)
@@ -75,7 +72,10 @@ def check_sign(file_path, l = 256):
 
         if r > q or s > q: return "Signature is invalid"
 
+        t1 = time.time()
         h = int(start_stribog(M, l), 16)
+        t2 = time.time()
+        print("Время выполнения Стрибог:", t2 - t1)
 
         e = h % q
         if e == 0: e = 1
@@ -90,9 +90,12 @@ def check_sign(file_path, l = 256):
             result = "Signature is valid"
         else:
             result = "Signature is invalid"
-        t = (time.time() - t).__round__(2)
+
+        t3 = time.time()
+        t = (time.time() - t)
+        print("Время создания подписи:", t3 - t2)
+        print("Общее время выполнения программы:", t)
         print(result)
-        print("\nProgram execution time:", t)
 
         return result
     except Exception as e:

@@ -147,7 +147,7 @@ if __name__ == "__main__":
     with open('picture_big.jpg', 'rb') as f:
         message = f.read()
     t = time.time()
-    hash_result = sha256(message)
+    hash_result = c(message)
     print(f"Хэш для picture_big.jpg (hex): {hash_result.hex()}")
     print(f"Время выполнения: {time.time() - t:.5f} сек")
 

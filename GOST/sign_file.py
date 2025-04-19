@@ -85,24 +85,14 @@ def sign_file(file_path, hash_size=None, constants=None):
     folder_path = main_folder + "/" + "sign_" + file_name
     uni.create_folder(folder_path)
     uni.safe_file(folder_path + "/open_key_" + file_name + ".txt", params)
-    
-    # Обрабатываем файл по частям
-    file_content = bytearray()
-    file_type = None
-    
-    for chunk, chunk_type in process_file_in_chunks(file_path):
-        if file_type is None:
-            file_type = chunk_type
-        
-        if file_type == 'text' and isinstance(chunk, str):
-            file_content.extend(chunk.encode('utf-8'))
-        else:
-            file_content.extend(chunk)
-    
-    h = int(start_stribog(bytes(file_content), l), 16)
-    
-    # Освобождаем память
-    del file_content
+
+    t1 = time.time()
+
+    M = open(file_path, 'rb').read()
+
+    h = int(start_stribog(M, l), 16)
+    t2 = time.time()
+    print("Время выполнения Стрибог:", t2 - t1)
     
     r, s = gen_sign(q, P, d, h)
     r_bin = format(r, f'0{l}b')
@@ -111,8 +101,11 @@ def sign_file(file_path, hash_size=None, constants=None):
 
     uni.safe_file(folder_path + "/sign_" + file_name + ".txt", zeta_bin)
 
-    t = (time.time() - t).__round__(2)
-    print("\nProgram execution time:", t)
+    t3 = time.time()
+    t = (time.time() - t)
+    print("Время создания подписи:", t3 - t2)
+    print("Общее время выполнения программы:", t)
+
     return folder_path.split('/')[-1]
 
 
