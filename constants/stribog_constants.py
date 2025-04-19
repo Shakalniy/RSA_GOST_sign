@@ -2,7 +2,7 @@ block_size = 64
 
 IV_512 = bytes(block_size)
 
-IV_256 = bytes(32) + bytes([0x01] * 32)
+IV_256 = bytes([0x01] * 64)
 
 IV_512_HEX = IV_512.hex()
 IV_256_HEX = IV_256.hex()
