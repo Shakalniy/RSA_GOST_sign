@@ -149,9 +149,10 @@ def gen_params():
         # print(f"Base point P = {P}")
         # print(f"Check: [q]P = {q * P}")
 
-        is_safe, reason = check_security(p, a, b, q)
+        # is_safe, reason = check_security(p, a, b, q)
         # print(f"Security: {is_safe}")
         # print(f"Reason: {reason}")
-        
-        print(f"Time: {time.time() - t}")
+
+        t = (time.time() - t).__round__(2)
+        print("\nВремя выполнения программы:", t)
         return p, a, b, m, q, P

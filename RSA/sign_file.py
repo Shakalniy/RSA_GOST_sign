@@ -3,7 +3,8 @@ import os
 sys.path.append(os.path.dirname(os.path.dirname(__file__)))
 from RSA import gen_keys
 from RSA import gen_prime_nums as prime
-from RSA.sha256 import standard_sha256
+from RSA.gen_params import gen_params
+from RSA.sha256 import sha256
 import universal_functions as uni
 from RSA import convert_file
 import time
@@ -14,45 +15,38 @@ size = 1024
 main_folder = 'signed_files/RSA'
 
 
-def sign_file(file_path):
+def sign_file(file_path, constants=None):
     file_name = file_path.split('/')[-1].split('.')[0]
     t = time.time()
 
-    is_correct = False
-    p, q, n = 0, 0, 0
-    while not is_correct:
-        p = prime.gen_secure_prime_num(size)
-        q = prime.gen_secure_prime_num(size)
-        if max(p, q) - min(p, q) > 2**(size/4):
-            is_correct = True
+    if constants:
+        n = constants.n
+        e = constants.e
+        d = constants.d
+    else:
+        n, e, d = gen_params()
 
-    n = p * q
-    print("Generated parameters:")
-    print("p = ", p)
-    print("q = ", q)
-    print("n = ", n)
-
-    phi_n = (p - 1) * (q - 1)
-    nod = uni.gcd(p-1, q-1)
-    nok = phi_n // nod
-    e, d = gen_keys.gen_keys(n, phi_n, nok)
-
-    print("Generated keys:")
-    print("e = ", e)
-    print("d = ", d)
+    # print("Generated keys:")
+    # print("e = ", e)
+    # print("d = ", d)
     
     folder_path = main_folder + "/" + "sign_" + file_name
     uni.create_folder(folder_path)
     uni.safe_file(folder_path + "/open_key_" + file_name + ".txt", str(e) + "\n" + str(n))
 
-    bytes = convert_file.convert_file_to_bits(file_path, n)
-    hash = int.from_bytes(standard_sha256(bytes.encode()))
+    t1 = time.time()
+    bytes = open(file_path, 'rb').read()
+    hash = int.from_bytes(sha256(bytes))
+    t2 = time.time()
+    print("Время выполнения SHA256:", t2 - t1)
 
     sign = uni.power(hash, d, n)
     uni.safe_file(folder_path + "/sign_" + file_name + ".txt", str(sign))
 
-    t = (time.time() - t).__round__(2)
-    print("\nProgram execution time:", t)
+    t3 = time.time()
+    t = (time.time() - t)
+    print("Время создания подписи:", t3 - t2)
+    print("Общее время выполнения программы:", t)
     return folder_path.split('/')[-1]
 
 
