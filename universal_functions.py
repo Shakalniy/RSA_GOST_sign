@@ -49,15 +49,16 @@ def create_folder(file_name):
     try:
         folder_path = file_name.split('.')[0]
         os.makedirs(folder_path, exist_ok=True)
-        print(f"Folder '{folder_path}' successfully created.")
+        # print(f"Folder '{folder_path}' successfully created.")
     except FileExistsError:
-        print(f"Folder '{folder_path}' already exists.")
+        pass
+        # print(f"Folder '{folder_path}' already exists.")
 
 
 def safe_file(file_name, n):
     with open(file_name, 'w') as f:
         f.write(n)
-    print(f"File {file_name} saved.")
+    # print(f"File {file_name} saved.")
 
 
 def check_file_exists(file_path):

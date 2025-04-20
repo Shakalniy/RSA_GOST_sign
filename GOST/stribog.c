@@ -137,28 +137,28 @@ void l_transform(uint8_t* state, size_t block_size) {
 void e_transform(uint8_t* state, uint8_t* K, size_t block_size) {
     uint8_t temp[BLOCK_SIZE];
     for (int i = 0; i < 12; i++) {
-        for (size_t j = 0; j < block_size; j++) temp[j] = state[j] ^ K[j];
-        for (size_t j = 0; j < block_size; j++) temp[j] = S_BOX[temp[j]];
-        for (size_t j = 0; j < block_size; j++) temp[j] = temp[P_TABLE[j]];
-        l_transform(temp, block_size);
+        for (size_t j = 0; j < block_size; j++) temp[j] = state[j] ^ K[j]; // X-преобразование
+        for (size_t j = 0; j < block_size; j++) temp[j] = S_BOX[temp[j]]; // S-преобразование
+        for (size_t j = 0; j < block_size; j++) temp[j] = temp[P_TABLE[j]]; // P-преобразование
+        l_transform(temp, block_size);  // L-преобразование
         memcpy(state, temp, block_size);
-        for (size_t j = 0; j < block_size; j++) K[j] ^= C[i][j];
-        for (size_t j = 0; j < block_size; j++) K[j] = S_BOX[K[j]];
-        for (size_t j = 0; j < block_size; j++) K[j] = K[P_TABLE[j]];
-        l_transform(K, block_size);
+        for (size_t j = 0; j < block_size; j++) K[j] ^= C[i][j]; // X-преобразование
+        for (size_t j = 0; j < block_size; j++) K[j] = S_BOX[K[j]]; // S-преобразование
+        for (size_t j = 0; j < block_size; j++) K[j] = K[P_TABLE[j]]; // P-преобразование
+        l_transform(K, block_size);  // L-преобразование
     }
 }
 
 // Функция g_N
 void g_N(uint8_t* h, const uint8_t* m, const uint8_t* N, uint8_t* out, size_t block_size) {
     uint8_t K[BLOCK_SIZE];
-    for (size_t i = 0; i < block_size; i++) K[i] = h[i] ^ N[i];
-    for (size_t i = 0; i < block_size; i++) K[i] = S_BOX[K[i]];
-    for (size_t i = 0; i < block_size; i++) K[i] = K[P_TABLE[i]];
-    l_transform(K, block_size);
+    for (size_t i = 0; i < block_size; i++) K[i] = h[i] ^ N[i]; // X-преобразование
+    for (size_t i = 0; i < block_size; i++) K[i] = S_BOX[K[i]]; // S-преобразование
+    for (size_t i = 0; i < block_size; i++) K[i] = K[P_TABLE[i]]; // P-преобразование
+    l_transform(K, block_size);  // L-преобразование
     uint8_t enc[BLOCK_SIZE];
     memcpy(enc, m, block_size);
-    e_transform(enc, K, block_size);
+    e_transform(enc, K, block_size); // E-преобразование
     for (size_t i = 0; i < block_size; i++) out[i] = enc[i] ^ h[i] ^ m[i];
 }
 
@@ -213,10 +213,10 @@ void stribog_hash(const uint8_t* msg, size_t len, uint8_t* out, int bit_size) {
     uint8_t m_last[BLOCK_SIZE] = {0};
     if (rem > 0) {
         size_t byte_pos = BLOCK_SIZE - rem - 1;
-        m_last[byte_pos] = 0x01;
+        m_last[byte_pos] = 0x80;
         memcpy(m_last + byte_pos + 1, msg + full_blocks * BLOCK_SIZE, rem);
     } else {
-        m_last[BLOCK_SIZE - 1] = 0x80;
+        m_last[BLOCK_SIZE - 1] = 0x01;
     }
     uint8_t tmp[BLOCK_SIZE];
     g_N(h, m_last, N, tmp, BLOCK_SIZE);

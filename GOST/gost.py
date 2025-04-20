@@ -11,7 +11,7 @@ import weakref
 
 # Добавляем импорт констант
 sys.path.append(os.path.dirname(os.path.dirname(__file__)))
-from constants import sign_params_constants
+from constants import GOST_sign_params_constants
 
 class GOSTFrame(QWidget):
     def __init__(self):
@@ -382,7 +382,7 @@ class GOSTFrame(QWidget):
             # Выполняем подпись файла
             if self.use_constants_radio.isChecked():
                 hash_size = 256 if self.hash_256_radio_sign.isChecked() else 512
-                folder = sign_file.sign_file(file_path, hash_size, sign_params_constants)
+                folder = sign_file.sign_file(file_path, hash_size, GOST_sign_params_constants)
             else:
                 folder = sign_file.sign_file(file_path)
             
