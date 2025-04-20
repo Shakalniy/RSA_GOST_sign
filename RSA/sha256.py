@@ -28,14 +28,7 @@ def compress_block(block: uint8[:], H: uint32[:], K: uint32[:]):
         W[j] = uint32(W[j - 16] + s0 + W[j - 7] + s1) & 0xFFFFFFFF
 
     # Инициализация рабочих переменных
-    a = uint32(H[0])
-    b = uint32(H[1])
-    c = uint32(H[2])
-    d = uint32(H[3])
-    e = uint32(H[4])
-    f = uint32(H[5])
-    g = uint32(H[6])
-    h = uint32(H[7])
+    a, b, c, d, e, f, g, h = [uint32(H[i]) for i in range(8)]
 
     # Основной цикл сжатия
     for j in range(64):
@@ -48,13 +41,9 @@ def compress_block(block: uint8[:], H: uint32[:], K: uint32[:]):
         maj = uint32(a & b) ^ uint32(a & c) ^ uint32(b & c)
         temp2 = uint32(S0 + maj) & 0xFFFFFFFF
 
-        h = g
-        g = f
-        f = e
+        h, g, f = g, f, e
         e = uint32(d + temp1) & 0xFFFFFFFF
-        d = c
-        c = b
-        b = a
+        d, c, b = c, b, a
         a = uint32(temp1 + temp2) & 0xFFFFFFFF
 
     # Обновление хэша
@@ -147,7 +136,7 @@ if __name__ == "__main__":
     with open('picture_big.jpg', 'rb') as f:
         message = f.read()
     t = time.time()
-    hash_result = c(message)
+    hash_result = sha256(message)
     print(f"Хэш для picture_big.jpg (hex): {hash_result.hex()}")
     print(f"Время выполнения: {time.time() - t:.5f} сек")
 
