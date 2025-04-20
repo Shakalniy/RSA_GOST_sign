@@ -4,7 +4,6 @@ import time
 original_dir = os.getcwd()
 sys.path.append(os.path.dirname(os.path.dirname(__file__)))
 import universal_functions as uni
-import universal_functions as uni
 from GOST.stribog import start_stribog
 from sage.all import *
 os.chdir(original_dir)

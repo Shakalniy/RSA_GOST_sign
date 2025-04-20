@@ -1,8 +1,6 @@
 import universal_functions as uni
-from RSA import convert_file
 from RSA.sha256 import sha256
 import time
-import hashlib
 
 
 main_folder = 'signed_files/RSA'

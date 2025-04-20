@@ -1,14 +1,10 @@
 import sys
 import os
 sys.path.append(os.path.dirname(os.path.dirname(__file__)))
-from RSA import gen_keys
-from RSA import gen_prime_nums as prime
 from RSA.gen_params import gen_params
 from RSA.sha256 import sha256
 import universal_functions as uni
-from RSA import convert_file
 import time
-import hashlib
 
 
 size = 1024

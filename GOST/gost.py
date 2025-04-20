@@ -625,7 +625,6 @@ class GOSTFrame(QWidget):
     @pyqtSlot()
     def calculate_hash(self):
         try:
-            from GOST import stribog
             
             # Определяем размер хеш-функции
             hash_size = 256 if self.hash_256_radio.isChecked() else 512
