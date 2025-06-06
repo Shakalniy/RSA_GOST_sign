@@ -26,7 +26,7 @@ def check_sign(file_path):
     e, n = get_open_key(open_key_name)
     t1 = time.time()
     bytes = open(file_path, 'rb').read()
-    hash = int.from_bytes(sha256(bytes))
+    hash = int.from_bytes(sha256(bytes), byteorder='big')
     t2 = time.time()
     print("Время выполнения SHA256:", t2 - t1)
     sign = uni.power(int(get_file_text(sign_file_name)), e, n)

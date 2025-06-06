@@ -1,0 +1,14 @@
+version: '3'
+
+services:
+  rsa_gost_app:
+    build: .
+    container_name: rsa_gost_sign
+    environment:
+      - DISPLAY=host.docker.internal:0.0
+      - QT_X11_NO_MITSHM=1
+    volumes:
+      - /tmp/.X11-unix:/tmp/.X11-unix
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    ipc: host

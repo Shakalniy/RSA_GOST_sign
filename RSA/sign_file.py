@@ -32,7 +32,7 @@ def sign_file(file_path, constants=None):
 
     t1 = time.time()
     bytes = open(file_path, 'rb').read()
-    hash = int.from_bytes(sha256(bytes))
+    hash = int.from_bytes(sha256(bytes), byteorder='big')
     t2 = time.time()
     print("Время выполнения SHA256:", t2 - t1)
 
@@ -50,7 +50,7 @@ if __name__ == '__main__':
     from memory_profiler import profile
     @profile
     def start_sign():
-        sign_file("GOST/picture.png")
+        sign_file("README.md")
         pass
     
     start_sign()
