@@ -47,6 +47,11 @@ def process_file_in_chunks(file_path, chunk_size=8192):
 
 def sign_file(file_path, hash_size=None, constants=None):
     file_name = file_path.split('/')[-1].split('.')[0]
+    M = open(file_path, 'rb').read()
+
+    # Проверка на пустой файл
+    if len(M) == 0:
+        raise ValueError("Ошибка: файл пустой.")
     t = time.time()
 
     # Если указаны константы, используем их
@@ -88,7 +93,6 @@ def sign_file(file_path, hash_size=None, constants=None):
 
     t1 = time.time()
 
-    M = open(file_path, 'rb').read()
 
     h = int(start_stribog(M, l), 16)
     t2 = time.time()

@@ -13,6 +13,12 @@ main_folder = 'signed_files/RSA'
 
 def sign_file(file_path, constants=None):
     file_name = file_path.split('/')[-1].split('.')[0]
+    bytes = open(file_path, 'rb').read()
+    
+    # Проверка на пустой файл
+    if len(bytes) == 0:
+        raise ValueError("Ошибка: файл пустой.")
+
     t = time.time()
 
     if constants:
@@ -31,7 +37,7 @@ def sign_file(file_path, constants=None):
     uni.safe_file(folder_path + "/open_key_" + file_name + ".txt", str(e) + "\n" + str(n))
 
     t1 = time.time()
-    bytes = open(file_path, 'rb').read()
+    
     hash = int.from_bytes(sha256(bytes), byteorder='big')
     t2 = time.time()
     print("Время выполнения SHA256:", t2 - t1)
