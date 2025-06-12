@@ -11,8 +11,7 @@ class SignatureApp(QMainWindow):
         super().__init__()
         self.setWindowTitle("Цифровая Подпись")
         self.setGeometry(100, 100, 600, 600)
-        
-        # Set application-wide stylesheet
+
         self.setStyleSheet("""
             QMainWindow {
                 background-color: #f8f9fa;
@@ -133,15 +132,13 @@ class SignatureApp(QMainWindow):
                 width: 0px;
             }
         """)
-        
-        # Main widget and layout
+
         self.central_widget = QWidget()
         self.setCentralWidget(self.central_widget)
         self.main_layout = QVBoxLayout(self.central_widget)
         self.main_layout.setContentsMargins(24, 24, 24, 24)
         self.main_layout.setSpacing(18)
-        
-        # Создаем кнопку назад
+
         self.back_button = QPushButton("← Назад")
         self.back_button.setObjectName("backButton")
         self.back_button.setFixedWidth(120)
@@ -155,17 +152,15 @@ class SignatureApp(QMainWindow):
             }
         """)
         self.back_button.clicked.connect(self.show_main_menu)
-        
-        # Добавляем кнопку назад в отдельный контейнер
+
         back_container = QHBoxLayout()
         back_container.setContentsMargins(0, 0, 0, 10)
         back_container.addWidget(self.back_button)
         back_container.addStretch()
         self.main_layout.addLayout(back_container)
         
-        self.back_button.hide()  # Hide initially
-        
-        # Content frame
+        self.back_button.hide()
+
         self.content_frame = QFrame()
         self.content_frame.setObjectName("contentFrame")
         self.content_frame.setStyleSheet("""
@@ -181,11 +176,10 @@ class SignatureApp(QMainWindow):
         self.content_layout.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.main_layout.addWidget(self.content_frame)
         
-        # Show main menu
+        # Главное меню
         self.show_main_menu()
     
     def clear_content(self):
-        # Clear all widgets from content layout
         while self.content_layout.count():
             item = self.content_layout.takeAt(0)
             widget = item.widget()
@@ -195,8 +189,7 @@ class SignatureApp(QMainWindow):
     def show_main_menu(self):
         self.clear_content()
         self.back_button.hide()
-        
-        # Create buttons with modern styling
+
         rsa_button = QPushButton("Цифровая подпись RSA")
         rsa_button.setObjectName("rsaButton")
         rsa_button.setFixedWidth(320)
@@ -238,8 +231,7 @@ class SignatureApp(QMainWindow):
             }
         """)
         exit_button.clicked.connect(self.close)
-        
-        # Logo or title - используем HTML для гарантированного размера
+
         app_title = QLabel()
         app_title.setText("<html><head/><body><p align='center'><span style='font-size:20pt; font-weight:600;'>Система цифровой подписи</span></p></body></html>")
         app_title.setAlignment(Qt.AlignmentFlag.AlignCenter)
@@ -247,8 +239,7 @@ class SignatureApp(QMainWindow):
         app_subtitle = QLabel()
         app_subtitle.setText("<html><head/><body><p align='center'><span style='font-size:12pt; color:#6c757d;'>Защита и проверка целостности ваших данных</span></p></body></html>")
         app_subtitle.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        
-        # Add buttons to layout with spacing
+
         self.content_layout.addStretch()
         self.content_layout.addWidget(app_title, alignment=Qt.AlignmentFlag.AlignCenter)
         self.content_layout.addSpacing(10)
@@ -265,7 +256,7 @@ class SignatureApp(QMainWindow):
         self.clear_content()
         self.back_button.show()
         
-        # Create RSA frame
+        # Экран RSA
         rsa_frame = rsa.RSAFrame()
         self.content_layout.addWidget(rsa_frame)
     
@@ -273,13 +264,13 @@ class SignatureApp(QMainWindow):
         self.clear_content()
         self.back_button.show()
         
-        # Create GOST frame
+        # Экран GOST
         gost_frame = gost.GOSTFrame()
         self.content_layout.addWidget(gost_frame)
 
 def main():
     app = QApplication(sys.argv)
-    app.setStyle("Fusion")  # Use Fusion style for a modern look
+    app.setStyle("Fusion")
     window = SignatureApp()
     window.show()
     sys.exit(app.exec())

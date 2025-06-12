@@ -1,11 +1,9 @@
-# Byte-compiled / optimized / DLL files
 __pycache__/
 */__pycache__/
 */**/__pycache__/
 *.py[cod]
 *$py.class
 
-# Distribution / packaging
 .Python
 build/
 develop-eggs/
@@ -24,13 +22,8 @@ share/python-wheels/
 .installed.cfg
 *.egg
 
-# Jupyter Notebook
-.ipynb_checkpoints
-
-# pyenv
 .python-version
 
-# PEP 582; used by e.g. github.com/David-OConnor/pyflow
 __pypackages__/
 
 *.pdf
@@ -47,3 +40,4 @@ README_PyQt.md
 *.so
 *.*prof
 *.gcda
+*.sh

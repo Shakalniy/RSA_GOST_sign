@@ -21,12 +21,10 @@ class GOSTFrame(QWidget):
         self.timers = {}
         
     def init_ui(self):
-        # Main layout
         main_layout = QVBoxLayout(self)
         main_layout.setContentsMargins(10, 0, 10, 10)  
         main_layout.setSpacing(5)  
-        
-        # Create tab widget
+
         self.tab_widget = QTabWidget()
         self.tab_widget.setObjectName("gostTabWidget")
         self.tab_widget.setStyleSheet("""
@@ -56,13 +54,11 @@ class GOSTFrame(QWidget):
                 background-color: #e9ecef;
             }
         """)
-        
-        # Create signature tab
+
         signature_tab = QWidget()
         self.setup_signature_tab(signature_tab)
         self.tab_widget.addTab(signature_tab, "Цифровая подпись")
-        
-        # Create hash tab
+
         hash_tab = QWidget()
         self.init_hash_tab(hash_tab)
         self.tab_widget.addTab(hash_tab, "Хеширование")
@@ -95,8 +91,7 @@ class GOSTFrame(QWidget):
         info_layout.addWidget(info_text)
         
         layout.addWidget(info_frame)
-        
-        # Выбор файла
+
         file_group = QGroupBox("Выбор файла")
         file_layout = QHBoxLayout(file_group)
         
@@ -117,12 +112,10 @@ class GOSTFrame(QWidget):
         file_layout.addWidget(browse_button)
         
         layout.addWidget(file_group)
-        
-        # Выбор параметров
+
         params_group = QGroupBox("Параметры подписи")
         params_layout = QVBoxLayout(params_group)
-        
-        # Радиокнопки для выбора типа параметров
+
         self.gen_params_radio = QRadioButton("Генерировать параметры с нуля")
         self.use_constants_radio = QRadioButton("Использовать готовые параметры")
         self.gen_params_radio.setChecked(True)  # По умолчанию генерируем параметры
@@ -132,22 +125,18 @@ class GOSTFrame(QWidget):
         radio_layout.addWidget(self.use_constants_radio)
         radio_layout.addStretch()
         params_layout.addLayout(radio_layout)
-        
-        # Стек виджетов для выбора размера хеш-функции (только для готовых параметров)
+
         self.params_stack = QStackedWidget()
-        
-        # Пустой виджет для случая генерации параметров
+
         empty_widget = QWidget()
-        
-        # Виджет для выбора размера хеш-функции
+
         hash_size_widget = QWidget()
         hash_size_layout = QVBoxLayout(hash_size_widget)
         hash_size_layout.setContentsMargins(0, 10, 0, 0)
         
         hash_size_label = QLabel("Выберите размер хеш-функции:")
         hash_size_layout.addWidget(hash_size_label)
-        
-        # Радиокнопки для выбора размера хеша
+
         self.hash_256_radio_sign = QRadioButton("256 бит")
         self.hash_512_radio_sign = QRadioButton("512 бит")
         self.hash_256_radio_sign.setChecked(True)  # По умолчанию выбран размер 256 бит
@@ -157,19 +146,16 @@ class GOSTFrame(QWidget):
         hash_size_radio_layout.addWidget(self.hash_512_radio_sign)
         hash_size_radio_layout.addStretch()
         hash_size_layout.addLayout(hash_size_radio_layout)
-        
-        # Добавляем виджеты в стек
+
         self.params_stack.addWidget(empty_widget)
         self.params_stack.addWidget(hash_size_widget)
-        
-        # Подключаем сигналы радиокнопок к переключению стека
+
         self.gen_params_radio.toggled.connect(lambda checked: self.params_stack.setCurrentIndex(0) if checked else None)
         self.use_constants_radio.toggled.connect(lambda checked: self.params_stack.setCurrentIndex(1) if checked else None)
         
         params_layout.addWidget(self.params_stack)
         layout.addWidget(params_group)
-        
-        # Операции
+
         operations_group = QGroupBox("Операции")
         operations_layout = QVBoxLayout(operations_group)
         
@@ -230,8 +216,7 @@ class GOSTFrame(QWidget):
         layout = QVBoxLayout(parent)
         layout.setContentsMargins(20, 20, 20, 20)
         layout.setSpacing(15)
-        
-        # Информационный блок
+
         info_frame = QFrame()
         info_frame.setObjectName("infoFrame")
         info_frame.setStyleSheet("""
@@ -252,12 +237,10 @@ class GOSTFrame(QWidget):
         info_layout.addWidget(info_text)
         
         layout.addWidget(info_frame)
-        
-        # Выбор источника данных
+
         source_group = QGroupBox("Источник данных")
         source_layout = QVBoxLayout(source_group)
-        
-        # Радиокнопки для выбора источника
+
         self.file_radio = QRadioButton("Файл")
         self.text_radio = QRadioButton("Текст")
         self.file_radio.setChecked(True)  # По умолчанию выбран файл
@@ -267,11 +250,9 @@ class GOSTFrame(QWidget):
         radio_layout.addWidget(self.text_radio)
         radio_layout.addStretch()
         source_layout.addLayout(radio_layout)
-        
-        # Стек виджетов для переключения между файлом и текстом
+
         self.source_stack = QStackedWidget()
-        
-        # Виджет для выбора файла
+
         file_widget = QWidget()
         file_layout = QHBoxLayout(file_widget)
         file_layout.setContentsMargins(0, 10, 0, 0)
@@ -286,8 +267,7 @@ class GOSTFrame(QWidget):
         
         file_layout.addWidget(self.hash_file_path)
         file_layout.addWidget(browse_button)
-        
-        # Виджет для ввода текста
+
         text_widget = QWidget()
         text_layout = QVBoxLayout(text_widget)
         text_layout.setContentsMargins(0, 10, 0, 0)
@@ -297,23 +277,19 @@ class GOSTFrame(QWidget):
         self.hash_text_input.setMinimumHeight(100)
         
         text_layout.addWidget(self.hash_text_input)
-        
-        # Добавляем виджеты в стек
+
         self.source_stack.addWidget(file_widget)
         self.source_stack.addWidget(text_widget)
-        
-        # Подключаем сигналы радиокнопок к переключению стека
+
         self.file_radio.toggled.connect(lambda checked: self.source_stack.setCurrentIndex(0) if checked else None)
         self.text_radio.toggled.connect(lambda checked: self.source_stack.setCurrentIndex(1) if checked else None)
         
         source_layout.addWidget(self.source_stack)
         layout.addWidget(source_group)
-        
-        # Выбор размера хеш-функции
+
         hash_size_group = QGroupBox("Размер хеш-функции")
         hash_size_layout = QVBoxLayout(hash_size_group)
-        
-        # Радиокнопки для выбора размера хеша
+
         self.hash_256_radio = QRadioButton("256 бит")
         self.hash_512_radio = QRadioButton("512 бит")
         self.hash_256_radio.setChecked(True)  # По умолчанию выбран размер 256 бит
@@ -325,8 +301,7 @@ class GOSTFrame(QWidget):
         hash_size_layout.addLayout(hash_size_radio_layout)
         
         layout.addWidget(hash_size_group)
-        
-        # Операции
+
         operations_group = QGroupBox("Операции")
         operations_layout = QVBoxLayout(operations_group)
         
@@ -364,7 +339,6 @@ class GOSTFrame(QWidget):
             return
         
         try:
-            # Устанавливаем статус "Подпись формируется"
             self.status_label.setText("Подпись формируется...")
             self.status_label.setStyleSheet("""
                 padding: 10px;
@@ -376,17 +350,14 @@ class GOSTFrame(QWidget):
                 margin: 5px;
                 text-align: center;
             """)
-            # Обновляем интерфейс, чтобы статус отобразился немедленно
             QApplication.processEvents()
-            
-            # Выполняем подпись файла
+
             if self.use_constants_radio.isChecked():
                 hash_size = 256 if self.hash_256_radio_sign.isChecked() else 512
                 folder = sign_file.sign_file(file_path, hash_size, GOST_sign_params_constants)
             else:
                 folder = sign_file.sign_file(file_path)
-            
-            # Обновляем статус
+
             self.status_label.setText("Файл успешно подписан")
             self.status_label.setStyleSheet("""
                 padding: 10px;
@@ -398,8 +369,7 @@ class GOSTFrame(QWidget):
                 margin: 5px;
                 text-align: center;
             """)
-            
-            # Показываем всплывающее окно с путем к папке
+
             folder_path = os.path.dirname(file_path) + '/' + folder
             self.show_folder_path_dialog(folder_path)
             
@@ -418,7 +388,6 @@ class GOSTFrame(QWidget):
             """)
     
     def show_folder_path_dialog(self, folder_path):
-        # Создаем диалоговое окно
         dialog = QDialog(self)
         dialog.setWindowTitle("Информация")
         dialog.setFixedSize(500, 200)
@@ -455,17 +424,14 @@ class GOSTFrame(QWidget):
                 font-family: monospace;
             }
         """)
-        
-        # Создаем компоненты диалога
+
         layout = QVBoxLayout(dialog)
         layout.setSpacing(15)
-        
-        # Информационное сообщение
+
         info_label = QLabel("Файл успешно подписан")
         info_label.setStyleSheet("font-weight: bold; font-size: 16px; color: #155724;")
         layout.addWidget(info_label)
-        
-        # Путь к папке
+
         path_layout = QHBoxLayout()
         path_label = QLabel("Путь к папке:")
         path_layout.addWidget(path_label)
@@ -480,8 +446,7 @@ class GOSTFrame(QWidget):
         path_layout.addWidget(copy_button)
         
         layout.addLayout(path_layout)
-        
-        # Кнопка закрытия
+
         close_button = QPushButton("Закрыть")
         close_button.clicked.connect(dialog.accept)
         layout.addWidget(close_button, 0, Qt.AlignmentFlag.AlignCenter)
@@ -491,21 +456,17 @@ class GOSTFrame(QWidget):
     def copy_to_clipboard(self, text, button):
         clipboard = QApplication.clipboard()
         clipboard.setText(text)
-        
-        # Изменяем текст кнопки на короткое время
+
         original_text = button.text()
         button.setText("Скопировано!")
-        
-        # Если для этой кнопки уже есть таймер, останавливаем его
+
         button_id = id(button)
         if button_id in self.timers:
             self.timers[button_id].stop()
-        
-        # Создаем новый таймер
+
         timer = QTimer(self)
         timer.setSingleShot(True)
-        
-        # Используем weakref для предотвращения утечек памяти
+
         weak_button = weakref.ref(button)
         
         def restore_text():
@@ -515,8 +476,7 @@ class GOSTFrame(QWidget):
         
         timer.timeout.connect(restore_text)
         timer.start(1500)
-        
-        # Сохраняем таймер в словаре
+
         self.timers[button_id] = timer
     
     @pyqtSlot()
@@ -537,7 +497,6 @@ class GOSTFrame(QWidget):
             return
         
         try:
-            # Устанавливаем статус "Подпись проверяется"
             self.status_label.setText("Подпись проверяется...")
             self.status_label.setStyleSheet("""
                 padding: 10px;
@@ -549,19 +508,17 @@ class GOSTFrame(QWidget):
                 margin: 5px;
                 text-align: center;
             """)
-            # Обновляем интерфейс, чтобы статус отобразился немедленно
             QApplication.processEvents()
-            
-            # Проверяем подпись
+
             if self.use_constants_radio.isChecked():
                 hash_size = 256 if self.hash_256_radio_sign.isChecked() else 512
                 result = check_sign.check_sign(file_path, hash_size)
             else:
                 result = check_sign.check_sign(file_path)
             
-            if result == "Signature is valid":
+            if result == "Подпись действительна":
                 result_text = "Подпись верна. Файл не был изменен."
-            elif result == "Signature not found":
+            elif result == "Подпись не найдена":
                 result_text = "Подпись не найдена"
             else:
                 result_text = "Подпись недействительна. Файл был изменен или подпись некорректна."
@@ -625,12 +582,9 @@ class GOSTFrame(QWidget):
     @pyqtSlot()
     def calculate_hash(self):
         try:
-            
-            # Определяем размер хеш-функции
             hash_size = 256 if self.hash_256_radio.isChecked() else 512
             
             if self.file_radio.isChecked():
-                # Хеширование файла
                 file_path = self.hash_file_path.text()
                 if not file_path:
                     self.show_warning_dialog("Файл не выбран", "Пожалуйста, выберите файл для хеширования.")
@@ -640,7 +594,6 @@ class GOSTFrame(QWidget):
                 source_type = "файла"
                 source_name = file_path
             else:
-                # Хеширование текста
                 text = self.hash_text_input.toPlainText()
                 if not text:
                     self.show_warning_dialog("Текст не введен", "Пожалуйста, введите текст для хеширования.")
@@ -649,15 +602,13 @@ class GOSTFrame(QWidget):
                 hash_value = stribog.start_stribog(text, hash_size)
                 source_type = "текста"
                 source_name = text[:30] + "..." if len(text) > 30 else text
-            
-            # Создаем всплывающее окно с результатом
+
             self.show_hash_result_dialog(hash_value, source_type, source_name, hash_size)
             
         except Exception as e:
             QMessageBox.critical(self, "Ошибка", f"Ошибка при хешировании: {str(e)}")
     
     def show_warning_dialog(self, title, message):
-        # Создаем диалоговое окно предупреждения
         dialog = QDialog(self)
         dialog.setWindowTitle("Предупреждение")
         dialog.setFixedSize(400, 200)
@@ -683,13 +634,11 @@ class GOSTFrame(QWidget):
                 background-color: #fcc419;
             }
         """)
-        
-        # Создаем компоненты диалога
+
         layout = QVBoxLayout(dialog)
         layout.setSpacing(15)
         layout.setContentsMargins(20, 20, 20, 20)
-        
-        # Иконка предупреждения
+
         icon_layout = QHBoxLayout()
         icon_label = QLabel()
         icon_label.setFixedSize(48, 48)
@@ -711,14 +660,12 @@ class GOSTFrame(QWidget):
         title_label.setStyleSheet("font-weight: bold; font-size: 16px;")
         title_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
         layout.addWidget(title_label)
-        
-        # Сообщение
+
         message_label = QLabel(message)
         message_label.setWordWrap(True)
         message_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
         layout.addWidget(message_label)
-        
-        # Кнопка OK
+
         ok_button = QPushButton("OK")
         ok_button.setFixedWidth(100)
         ok_button.clicked.connect(dialog.accept)
@@ -727,7 +674,6 @@ class GOSTFrame(QWidget):
         dialog.exec()
     
     def show_hash_result_dialog(self, hash_value, source_type, source_name, hash_size):
-        # Создаем диалоговое окно
         dialog = QDialog(self)
         dialog.setWindowTitle(f"Результат хеширования (ГОСТ Р 34.11-2018, {hash_size} бит)")
         dialog.setMinimumWidth(500)
@@ -764,22 +710,18 @@ class GOSTFrame(QWidget):
                 font-family: monospace;
             }
         """)
-        
-        # Создаем макет
+
         layout = QVBoxLayout(dialog)
         layout.setSpacing(15)
-        
-        # Заголовок
+
         header = QLabel(f"Результат хеширования {source_type}")
         header.setStyleSheet("font-size: 16px; font-weight: bold;")
         layout.addWidget(header)
-        
-        # Информация об источнике
+
         source_info = QLabel(f"Источник: {source_name}")
         source_info.setWordWrap(True)
         layout.addWidget(source_info)
-        
-        # Результат хеширования
+
         result_label = QLabel("Хеш:")
         result_label.setStyleSheet("font-weight: bold;")
         layout.addWidget(result_label)
@@ -789,8 +731,7 @@ class GOSTFrame(QWidget):
         result_text.setReadOnly(True)
         result_text.setMinimumHeight(100)
         layout.addWidget(result_text)
-        
-        # Кнопки
+
         button_layout = QHBoxLayout()
         
         copy_button = QPushButton("Копировать хеш")
@@ -806,12 +747,10 @@ class GOSTFrame(QWidget):
         button_layout.addWidget(close_button)
         
         layout.addLayout(button_layout)
-        
-        # Показываем диалог
+
         dialog.exec()
 
     def closeEvent(self, event):
-        # Очищаем все таймеры при закрытии
         for timer in self.timers.values():
             timer.stop()
         self.timers.clear()

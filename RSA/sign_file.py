@@ -27,10 +27,6 @@ def sign_file(file_path, constants=None):
         d = constants.d
     else:
         n, e, d = gen_params()
-
-    # print("Generated keys:")
-    # print("e = ", e)
-    # print("d = ", d)
     
     folder_path = main_folder + "/" + "sign_" + file_name
     uni.create_folder(folder_path)
@@ -50,13 +46,3 @@ def sign_file(file_path, constants=None):
     print("Время создания подписи:", t3 - t2)
     print("Общее время выполнения программы:", t)
     return folder_path.split('/')[-1]
-
-
-if __name__ == '__main__':
-    from memory_profiler import profile
-    @profile
-    def start_sign():
-        sign_file("README.md")
-        pass
-    
-    start_sign()

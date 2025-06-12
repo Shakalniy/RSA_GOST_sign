@@ -33,7 +33,6 @@ def compress_block(block: uint8[:], H: uint32[:], K: uint32[:]):
     # Основной цикл сжатия
     for j in range(64):
         S1 = right_rotate(e, 6) ^ right_rotate(e, 11) ^ right_rotate(e, 25)
-        # Используем XOR вместо ~ для избежания проблем с типами
         not_e = uint32(0xFFFFFFFF ^ e)
         ch = uint32(e & f) ^ uint32(not_e & g)
         temp1 = uint32(h + S1 + ch + K[j] + W[j]) & 0xFFFFFFFF
@@ -87,7 +86,7 @@ def sha256(message):
         message = message.encode('utf-8')
     msg_length = len(message)
 
-    # Паддинг
+    # Дополнение сообщения
     padded_len = msg_length + 1 + 8
     while (padded_len * 8) % 512 != 0:
         padded_len += 1
@@ -109,39 +108,3 @@ def sha256(message):
         result[i4 + 2] = (H[i] >> 8) & 0xFF
         result[i4 + 3] = H[i] & 0xFF
     return bytes(result)
-
-
-if __name__ == "__main__":
-    import time
-    import hashlib
-
-    # Функция для тестирования
-    def test_sha256(input_data, expected_hex):
-        result = sha256(input_data)
-        hex_result = result.hex()
-        print(f"Вход: {input_data!r}")
-        print(f"Результат (bytes): {result}")
-        print(f"Результат (hex): {hex_result}")
-        print(f"Ожидаемый (hex): {expected_hex}")
-        print(f"Совпадает с hashlib: {hashlib.sha256(input_data.encode() if isinstance(input_data, str) else input_data).hexdigest() == hex_result}")
-        print()
-
-    # Тестовые примеры
-    test_sha256("", "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855")
-    test_sha256("abc", "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad")
-    test_sha256("The quick brown fox jumps over the lazy dog", "d7a8fbb307d7809469ca9abcb0082e4f8d5651e46d3cdb762d02d0bf37c9e592")
-    test_sha256("ABCDEFGHIJKLMNOPQRASTUVWXYZabcdifghijklmnopqrstuvwxyz012", "8da42cf08db5e96a775d96202fd2267316604e5ecc0cdb2d92ff4d60c65d3e36")
-
-    # Тест на большом файле
-    with open('picture_big.jpg', 'rb') as f:
-        message = f.read()
-    t = time.time()
-    hash_result = sha256(message)
-    print(f"Хэш для picture_big.jpg (hex): {hash_result.hex()}")
-    print(f"Время выполнения: {time.time() - t:.5f} сек")
-
-    # Сравнение с hashlib
-    t = time.time()
-    hashlib_result = hashlib.sha256(message).digest()
-    print(f"Время hashlib: {time.time() - t:.5f} сек")
-    print(f"Совпадает с hashlib: {hash_result == hashlib_result}")

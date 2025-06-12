@@ -15,25 +15,25 @@ main_folder = 'signed_files/GOST'
 def string_to_point(point_str, p, a, b):
     coords = point_str.strip("()").replace(" ", "").split(":")
     if len(coords) != 3:
-        raise ValueError("String must contain 3 coordinates: (x : y : z)")
+        raise ValueError("Строка должна содержать 3 координаты: (x : y : z).")
         
     x = int(coords[0])
     y = int(coords[1])
     z = int(coords[2])
         
     if z != 1:
-        raise ValueError("Only affine coordinates (z = 1) are supported")
+        raise ValueError("Поддерживаются только аффинные координаты (z = 1).")
         
     F = GF(p)
     try:
         E = EllipticCurve(F, [a, b])
     except ValueError:
-        raise ValueError("Invalid curve parameters: 4a^3 + 27b^2 ≡ 0 mod p")
+        raise ValueError("Недействительные параметры кривой: 4a^3 + 27b^2 ≡ 0 mod p.")
         
     try:
         P = E(x, y)
     except ValueError:
-        raise ValueError(f"Point ({x}, {y}) does not lie on curve E: y^2 = x^3 + {a}x + {b} mod {p}")
+        raise ValueError(f"Точка ({x}, {y}) не лежит на кривой E: y^2 = x^3 + {a}x + {b} mod {p}")
         
     return P
 
@@ -58,7 +58,7 @@ def check_sign(file_path, l = 256):
         open_key_name = folder_path + "/open_key_" + file_name + ".txt"
 
         if not uni.check_file_exists(sign_file_name) or not uni.check_file_exists(open_key_name):
-            return "Signature not found"
+            return "Подпись не найдена"
         
         t = time.time()
 
@@ -69,7 +69,7 @@ def check_sign(file_path, l = 256):
         r = int(zeta_bin[:l], 2)
         s = int(zeta_bin[l:], 2)
 
-        if r > q or s > q: return "Signature is invalid"
+        if r > q or s > q: return "Подпись не действительна"
 
         t1 = time.time()
         h = int(start_stribog(M, l), 16)
@@ -86,9 +86,9 @@ def check_sign(file_path, l = 256):
         R = int(C[0]) % q
     
         if R == r:
-            result = "Signature is valid"
+            result = "Подпись действительна"
         else:
-            result = "Signature is invalid"
+            result = "Подпись не действительна"
 
         t3 = time.time()
         t = (time.time() - t)
@@ -99,8 +99,4 @@ def check_sign(file_path, l = 256):
         return result
     except Exception as e:
         print(e)
-        return "Signature is invalid"
-
-
-if __name__ == "__main__":
-    check_sign("GOST/picture_big.jpg")
+        return "Подпись не действительна"

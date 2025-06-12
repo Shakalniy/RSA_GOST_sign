@@ -67,7 +67,7 @@ def sign_file(file_path, hash_size=None, constants=None):
             x_q, y_q = constants.Q_256
         else:  # hash_size == 512
             p = constants.p_512
-            a = 7  # Для 512 бит a = 7
+            a = 7
             b = constants.b_512
             m = constants.m_512
             q = constants.q_512
@@ -111,8 +111,3 @@ def sign_file(file_path, hash_size=None, constants=None):
     print("Общее время выполнения программы:", t)
 
     return folder_path.split('/')[-1]
-
-
-if __name__ == "__main__":
-    import constants.GOST_sign_params_constants as consta
-    sign_file("GOST/picture_big.jpg", 256, consta)

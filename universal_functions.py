@@ -42,23 +42,23 @@ def input_file_name(prompt, folder=""):
                 return file_name
             break
         except FileNotFoundError:
-            print("File not found.")
+            print("Файл не найден.")
 
 
 def create_folder(file_name):
     try:
         folder_path = file_name.split('.')[0]
         os.makedirs(folder_path, exist_ok=True)
-        # print(f"Folder '{folder_path}' successfully created.")
+        print(f"Папка '{folder_path}' успешно создана.")
     except FileExistsError:
         pass
-        # print(f"Folder '{folder_path}' already exists.")
+        print(f"Папка '{folder_path}' уже существует.")
 
 
 def safe_file(file_name, n):
     with open(file_name, 'w') as f:
         f.write(n)
-    # print(f"File {file_name} saved.")
+    print(f"Файл {file_name} сохранен.")
 
 
 def check_file_exists(file_path):
@@ -83,4 +83,4 @@ def input_number(prompt):
             num = int(input(prompt))
             return num
         except ValueError:
-            print("Invalid input. Please enter a number.")
+            print("Неправильный ввод. Пожалуйста введите целое число.")

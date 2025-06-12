@@ -13,17 +13,17 @@ os.chdir(original_dir)
 
 
 def sea_point_count(p, a, b):
-    # print(f"Input parameters: p = {p}, a = {a}, b = {b}")
+    print(f"Входные параметры: p = {p}, a = {a}, b = {b}")
     F = GF(p)
     E = EllipticCurve(F, [a, b])
     if E.is_singular():
-        raise ValueError("The curve is singular")
+        raise ValueError("Кривая сингулярна")
     j = E.j_invariant()
-    # print(f"j-invariant: {j}")
+    print(f"j-инвариант: {j}")
     N = E.order()
-    # print(f"Number of points (SEA): {N}")
+    print(f"Количество точек (SEA): {N}")
     t = p + 1 - N
-    # print(f"Frobenius trace t: {t}")
+    print(f"След Фробениуса t: {t}")
     return N
 
 
@@ -51,10 +51,10 @@ def chose_primes(p):
 
 
 def check_curve_order(m, j):
-    # print(f"Total number of points m = {m}")
-    # print(f"j-invariant: {j}")
+    print(f"Общее количество точек m = {m}")
+    print(f"j-инвариант: {j}")
     factorization = factor(m)
-    # print(f"Factorization of m: {factorization}")
+    print(f"Факторизация числа m: {factorization}")
     q = max(f for f, e in factorization if is_prime(f))
     h = m // q 
 
@@ -64,12 +64,10 @@ def check_curve_order(m, j):
     else:
         n = q
 
-    # print(f"Group order n = {n}")
-    # print(f"Cofactor h = {m} / {n} = {h}")
-    # if h > 4:
-    #     print("Warning: cofactor h > 4, may not be suitable for cryptography")
+    print(f"Порядок группы n = {n}")
+    print(f"Сомножитель h = {m} / {n} = {h}")
     if n < 2**128:
-        # print("Warning: order n is too small for security")
+        print("Порядок n слишком мал.")
         return False
 
     return n, h
@@ -79,9 +77,9 @@ def find_base_point(p, a, b, q):
     F = GF(p)
     E = EllipticCurve(F, [a, b])
     m = E.order()
-    h = m // q  # Cofactor
+    h = m // q  # сомножитель
     if m != h * q:
-        raise ValueError(f"m = {m} is not divisible by q = {q} with integer cofactor")
+        raise ValueError(f"m = {m} не делится на q = {q} с целым сомножителем")
 
     while True:
         x = F.random_element()
@@ -99,37 +97,6 @@ def find_base_point(p, a, b, q):
             return Q
 
 
-def check_security(p, a, b, q):
-    F = GF(p)
-    try:
-        E = EllipticCurve(F, [a, b])
-    except ValueError:
-        return False, "Singular curve (4a^3 + 27b^2 ≡ 0 mod p)"
-
-    m = E.order()
-    if m == p:
-        return False, f"Anomalous curve: m = {m} = p = {p}"
-
-    n = m // q
-    if m != n * q or n < 1:
-        return False, f"Invalid cofactor: m = {m}, q = {q}, n = {n}"
-    # print(f"Cofactor n = {n}")
-
-    j = E.j_invariant()
-    if j == 0 or j == 1728:
-        return False, f"Invalid J(E) = {j} (0 or 1728)"
-
-    B = 31 if 2**128 < q < 2**256 else 131 if 2**508 < q < 2**512 else None
-    if B is None:
-        return False, f"q = {q} is not in the range 2^160 < q < 2^256 or 2^508 < q < 2^512"
-
-    for t in range(1, B + 1):
-        if pow(p, t, q) == 1:
-            return False, f"MOV vulnerability: p^{t} ≡ 1 mod q"
-
-    return True, "All checks passed"
-
-
 def gen_params():
     while True:
         t = time.time()
@@ -137,21 +104,17 @@ def gen_params():
         a, b, j = gen_elliptic_curve_params(p)
         m = sea_point_count(p, a, b)
         if p == m:
-            # print("p == m")
+            print("p == m")
             continue
         res = check_curve_order(m, j)
         if not res:
             continue
         q, n = res
-        # print(f"Result: m = {m},\nn = {q},\nh = {n}")
-        # print(f"Length: {q.bit_length()}")
+        print(f"Результат: m = {m},\nn = {q},\nh = {n}")
+        print(f"Длина: {q.bit_length()}")
         P = find_base_point(p, a, b, q)
-        # print(f"Base point P = {P}")
-        # print(f"Check: [q]P = {q * P}")
-
-        # is_safe, reason = check_security(p, a, b, q)
-        # print(f"Security: {is_safe}")
-        # print(f"Reason: {reason}")
+        print(f"Базовая точка P = {P}")
+        print(f"Проверка: [q]P = {q * P}")
 
         t = (time.time() - t).__round__(2)
         print("\nВремя выполнения программы:", t)

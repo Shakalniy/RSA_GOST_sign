@@ -21,19 +21,19 @@ def gen_params():
             is_correct = True
 
     n = p * q
-    # print("Generated parameters:")
-    # print("p = ", p)
-    # print("q = ", q)
-    # print("n = ", n)
+    print("Сгенерированные параметры:")
+    print("p = ", p)
+    print("q = ", q)
+    print("n = ", n)
 
     phi_n = (p - 1) * (q - 1)
     nod = uni.gcd(p-1, q-1)
     nok = phi_n // nod
     e, d = gen_keys.gen_keys(n, phi_n, nok)
 
-    # print("Generated keys:")
-    # print("e = ", e)
-    # print("d = ", d)
+    print("Сгенерированные ключи:")
+    print("e = ", e)
+    print("d = ", d)
 
     t = (time.time() - t).__round__(2)
     print("\nВремя выполнения программы:", t)

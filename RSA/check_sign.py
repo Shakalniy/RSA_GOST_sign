@@ -21,7 +21,7 @@ def check_sign(file_path):
     sign_file_name = folder_path + "/" + "sign_" + file_name + ".txt"
     open_key_name = folder_path + "/open_key_" + file_name + ".txt"
     if not uni.check_file_exists(sign_file_name) or not uni.check_file_exists(open_key_name):
-        return "Signature not found."
+        return "Подпись не найдена."
     t = time.time()
     e, n = get_open_key(open_key_name)
     t1 = time.time()
@@ -31,9 +31,9 @@ def check_sign(file_path):
     print("Время выполнения SHA256:", t2 - t1)
     sign = uni.power(int(get_file_text(sign_file_name)), e, n)
     if sign == hash:
-        result = "Signature is valid."
+        result = "Подпись действительна."
     else:
-        result = "Signature is invalid."
+        result = "Подпись не действительна."
 
     t3 = time.time()
     t = (time.time() - t)

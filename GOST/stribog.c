@@ -229,5 +229,3 @@ void stribog_hash(const uint8_t* msg, size_t len, uint8_t* out, int bit_size) {
     // Финал
     final_transformation(h, Sigma, N, out, bit_size);
 }
-
-// 57d42eccc120a150a040703b81b224f3fb9b9c27d996a75d99837464d704735c
